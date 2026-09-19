@@ -405,6 +405,23 @@ private:
 
     void LearnSpellsForNewLevel(Player* player, uint8 fromLevel)
     {
+        // The 21 Chapters-of-Azeroth classes (ids 12-32) are not auto-taught
+        // here, and the reason is the loop below: it sweeps the whole spell
+        // store for SpellFamilyName == family and teaches every match of the
+        // level. GetSpellFamily() has no entry for a custom class, so it
+        // answered SPELLFAMILY_GENERIC - family 0, which is thousands of
+        // quest, item, racial and creature spells. The spike's T2 saw exactly
+        // that: a class 12 character handed every generic spell of its level.
+        //
+        // Returning the LEGACY class's family instead would be wrong in a
+        // quieter way - a class 23 Necromancer would learn real warlock
+        // spells it has no talents, resources or tooltips for. A CoA class
+        // gets its spells from its own class system (the class module's
+        // catalog, ascension_custom_class_spell and the class trainers), so
+        // the right amount for this module to add is none.
+        if (IsAscensionClass(player->getClass()))
+            return;
+
         uint8 upToLevel = player->GetLevel();
         uint32 family = GetSpellFamily(player);
 
@@ -513,6 +530,10 @@ private:
         case CLASS_WARLOCK:
             return SPELLFAMILY_WARLOCK;
         default:
+            // Reachable only for a class this module does not teach. The
+            // 21 CoA classes are turned away in LearnSpellsForNewLevel before
+            // they get here, because family 0 is not "no family" to the sweep
+            // below - it is every generic spell in the store.
             return SPELLFAMILY_GENERIC;
         }
     }
