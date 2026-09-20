@@ -3,6 +3,7 @@
 #include "DisableMgr.h"
 #include "Player.h"
 #include "ScriptMgr.h"
+#include "SharedDefines.h"   // IsAscensionClass / the Classes enum
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 
