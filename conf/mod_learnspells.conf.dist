@@ -5,6 +5,12 @@
 ###################################################################################################
 
 # Enable the module? (1: true | 0: false)
+#
+# Forgotten Land: the 21 Chapters-of-Azeroth classes (ids 12-32) learn on the same level-up, from
+# the module's own table (src/LearnSpellsCoAData.h: what CoA's class trainer sells each class at
+# each level) instead of the spell-family sweep the stock classes use. Enable, MaxLevel and
+# OnFirstLogin apply to them as they do to a stock class; a CoA class learns its level 1 rows at
+# creation already (mod-ascension-compat asks this module then).
 
 LearnSpells.Enable = 1
 

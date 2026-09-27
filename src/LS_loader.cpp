@@ -4,8 +4,10 @@
  */
 
 void AddSC_LearnAllSpells();
+void AddSC_LearnSpellsCoA();
 
 void Addmod_learn_spellsScripts()
 {
     AddSC_LearnAllSpells();
+    AddSC_LearnSpellsCoA();
 }
