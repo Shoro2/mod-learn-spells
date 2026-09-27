@@ -19,7 +19,10 @@ decides it for a trainer (`Player::IsSpellFitByClassAndRace`): the row's class m
 SkillRaceClassInfo gives the row's skill line to the race and class. Without that test ten Chapters-of-Azeroth
 spells that keep a stock family (Mu'sha's Blessing, Upheaval, Spiritual Recall, Sundering, Skitterer Form, Melt Lock,
 Hourglass of Time, Summoning Obelisk, Blood Covenant, Hoarfrost) went to every Warrior, Shaman, Druid, Mage or
-Warlock.
+Warlock. `data/sql/db-characters/2026_09_27_02_learnspells_stock_class_coa_spells_out.sql` takes them back from the
+characters of the classes 1-11 that learned them before (the spells, their action-bar buttons, the auras cast with
+them, their cooldowns); the DB updater applies it only while `Updates.EnableDatabases` includes the characters
+database (2).
 
 #### Forgotten Land: the 21 Chapters-of-Azeroth classes
 
