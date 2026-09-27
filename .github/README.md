@@ -11,6 +11,16 @@
 
 LearnAllSpells teach new spells on level-up, like in Cataclysm and up.
 
+#### Forgotten Land: which spells the stock classes' sweep takes
+
+A stock class learns every spell of its spell family whose base level it reaches and that has a race-free trainer
+row in SkillLineAbility (RaceMask 0, AcquireMethod 0) - and only if that row fits the class the way stock AzerothCore
+decides it for a trainer (`Player::IsSpellFitByClassAndRace`): the row's class mask, when set, names the class, and
+SkillRaceClassInfo gives the row's skill line to the race and class. Without that test ten Chapters-of-Azeroth
+spells that keep a stock family (Mu'sha's Blessing, Upheaval, Spiritual Recall, Sundering, Skitterer Form, Melt Lock,
+Hourglass of Time, Summoning Obelisk, Blood Covenant, Hoarfrost) went to every Warrior, Shaman, Druid, Mage or
+Warlock.
+
 #### Forgotten Land: the 21 Chapters-of-Azeroth classes
 
 The stock classes learn by sweeping the spell store for their spell family. A Chapters-of-Azeroth class (ids 12-32)

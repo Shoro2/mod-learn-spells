@@ -1,5 +1,6 @@
 #include "Chat.h"
 #include "Config.h"
+#include "DBCStores.h"       // GetSkillRaceClassInfo / SkillLineAbilityEntry
 #include "DisableMgr.h"
 #include "LearnSpellsCoA.h"
 #include "Player.h"
@@ -405,6 +406,31 @@ private:
         return m_ignoreSpells.find(spellID) != m_ignoreSpells.end();
     }
 
+    // Whether a SkillLineAbility row may teach its spell to this player, by
+    // the test stock AzerothCore applies to a row: Player::
+    // IsSpellFitByClassAndRace (what a trainer offers, Trainer.cpp) takes a
+    // row only if its ClassMask, when set, names the player's class and a
+    // SkillRaceClassInfo row gives the row's skill line to the player's race
+    // and class; learnSkillRewardedSpells checks the same class mask; and
+    // at the next login _LoadSpells (CheckSkillLearnedBySpell, while
+    // ValidateSkillLearnedBySpells is on) deletes, with an error line, a
+    // stock-class spell whose skill lines all fail that SkillRaceClassInfo
+    // test. The sweep takes only rows with RaceMask 0, so the race mask needs
+    // no test here.
+    //
+    // Before this test the sweep matched a row by the spell's family alone,
+    // and a Chapters-of-Azeroth spell that keeps a stock family went to every
+    // stock class of that family although its row names a CoA class - e.g.
+    // Mu'sha's Blessing (800292: warrior family, class mask Starcaller) to
+    // every Warrior at level 2.
+    static bool AbilityFitsPlayer(SkillLineAbilityEntry const* ability, Player const* player)
+    {
+        if (ability->ClassMask && !(ability->ClassMask & player->getClassMask()))
+            return false;
+
+        return GetSkillRaceClassInfo(ability->SkillLine, player->getRace(), player->getClass()) != nullptr;
+    }
+
     void LearnSpellsForNewLevel(Player* player, uint8 fromLevel)
     {
         // The 21 Chapters-of-Azeroth classes (ids 12-32) never reach the sweep
@@ -464,7 +490,8 @@ private:
 
                 for (auto itr = bounds.first; itr != bounds.second; ++itr)
                 {
-                    if (itr->second->Spell == spellInfo->Id && itr->second->RaceMask == 0 && itr->second->AcquireMethod == 0)
+                    if (itr->second->Spell == spellInfo->Id && itr->second->RaceMask == 0 && itr->second->AcquireMethod == 0 &&
+                        AbilityFitsPlayer(itr->second, player))
                     {
                         valid = true;
                         SpellInfo const* prevSpell = spellInfo->GetPrevRankSpell();
