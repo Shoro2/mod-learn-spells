@@ -19,7 +19,14 @@ mod-ascension-compat's own gate, tools/check_replacement_learns.py --targets). A
 name marks it deprecated is left out too. Nothing of the Book of Artisans (trainer 200001) is read: a spell only it
 teaches is a profession recipe.
 
-RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race).
+RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race). The
+replay reads the rule's data from the module's source - the racial skill lines (AscensionRacialAbilities::Skills),
+the class variants outside the DBC masks (ClassVariantsOutsideDbcMask, CoA c9389794) and the Felsworn capital rifts
+(AscensionCompat.cpp) - with the enum names resolved through CoA's src/server/shared/SharedDefines.h at the pin and
+the header's own enums. Its logic is a copy of the module's functions, and a copy is only right while the module runs
+the code it copied: every copied function (REPLAYED_RULES) is pinned by the SHA-256 of its text without comments and
+whitespace, and the generator refuses to run when one differs. Re-check the replay against the module's new code,
+then record the fingerprint the refusal prints.
 
 Every input is read, never executed: the CoA clone through `git show <pin>:<path>`, the DBC files directly.
 
@@ -29,6 +36,7 @@ usage:
 """
 import argparse
 import collections
+import hashlib
 import json
 import os
 import re
@@ -38,15 +46,33 @@ import sys
 
 COA_CLASSES = range(12, 33)
 PLAYABLE_RACES = (1, 2, 3, 4, 5, 6, 7, 8, 10, 11)
-# AscensionRacialAbilities::Skills (mod-ascension-compat): race -> racial skill lines
-RACIAL_SKILLS = ((1, 754), (2, 125), (2, 11125), (3, 101), (4, 126), (5, 220), (6, 124), (7, 753), (8, 733),
-                 (10, 756), (11, 760), (11, 11760))
-FELSWORN_CAPITAL_RIFTS = (535595, 535596, 535597, 535598, 535599, 535600)
-CLASS_WITCH_HUNTER, CLASS_SUN_CLERIC = 15, 27
-SKILL_RACIAL_BLOODELF, SKILL_DRAENEI_RACIAL_COA = 756, 11760
-SPELL_ARCANE_TORRENT_ALL_RESOURCES, SPELL_GIFT_OF_THE_NAARU_HYBRID = 28730, 814282
+SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN = 2   # DBCEnums.h
 SOURCES = ("CLASS", "RANK", "RANK_ROOT", "OFFER", "TRAINER", "BOOK_RANK")
 ITEM_EFFECTS = (24, 157, 34, 66)
+
+RACIAL_HEADER = "src/AscensionRacialAbilities.h"
+COMPAT_SOURCE = "src/AscensionCompat.cpp"
+# The mod-ascension-compat functions whose logic this generator copies, with the SHA-256 of each one's text (comments
+# and whitespace removed) as last checked against the copy: (file, function, fingerprint, where the copy lives).
+# Checked against mod-ascension-compat 00dca15 (CoA 10fa1627f63b merged).
+REPLAYED_RULES = (
+    (RACIAL_HEADER, "GetRace",
+     "6bb00b110a7d71c3599d0476c566ae069f81ceabcf0bb3d5872f859fc91afd38", "Racial.race_of"),
+    (RACIAL_HEADER, "IsClassVariantOutsideDbcMask",
+     "88041417ac791f21027a41aa7c63c7d90c288f3bd94e5830ac15ac9460528ac1", "Racial.variant"),
+    (RACIAL_HEADER, "CanLearn",
+     "f089d2a8b7bd8b6974e893377407c24ed7f430904181e2b86e91cf61fd94cef4", "Racial.can_learn"),
+    (COMPAT_SOURCE, "IsSupersededRacialCopy",
+     "6e17d3f9d068adfa89c8b81c8401aafaaea8536dc9a78786f13d5cf9a4aeba40", "Racial.superseded_copy"),
+    (COMPAT_SOURCE, "GetAscensionRacialSpells",
+     "75f1d432e4c8af933451b27dc0032d8f2f5e69328fb2ef2c46ae996d982f42a2", "Racial.racials (evidence only)"),
+    (COMPAT_SOURCE, "CanGrantAscensionRacialSpell",
+     "05d576315e3fb38f49fe9f8cac6b4f69be5e53fbce289e4a8e3aed9599b03178", "Racial.can_grant"),
+    ("src/AscensionCoATalentData.cpp", "LoadCoATalentData",
+     "6621172e37ccf153133af3f3483818cfb784d71e9ecab68a23bb3f8800fa69f3", "catalog_spells"),
+    ("src/AscensionClassMechanics.cpp", "HasDeprecatedWord",
+     "1722fbc876ffd5f01f6a3a1b106318a935d3542c81d13d0fdbf4834e19cf8b36", "deprecated"),
+)
 
 
 class Dbc(object):
@@ -86,6 +112,97 @@ def table_rows(text, name, fields):
     if size and int(size.group(1)) != len(rows):
         raise SystemExit("%s: parsed %d rows, declared %s" % (name, len(rows), size.group(1)))
     return rows
+
+
+def read_compat(compat, path):
+    return open(os.path.join(compat, path), encoding="utf-8", errors="replace").read()
+
+
+def definition(text, name):
+    """The one definition of a C++ function in a comment-free text: from its name through its balanced body."""
+    heads = list(re.finditer(r"\b%s\s*\([^;{}()]*\)\s*(?:const\s*)?\{" % re.escape(name), text))
+    if len(heads) != 1:
+        raise SystemExit("%d definitions of %s found, expected exactly one" % (len(heads), name))
+    i, depth = heads[0].end() - 1, 0
+    while i < len(text):
+        c = text[i]
+        if c in "\"'":                      # a string or character literal: its braces do not count
+            i += 1
+            while text[i] != c:
+                i += 2 if text[i] == "\\" else 1
+        elif c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if not depth:
+                return text[heads[0].start():i + 1]
+        i += 1
+    raise SystemExit("the body of %s is not balanced" % name)
+
+
+def check_replayed_rules(compat):
+    """Refuse to replay a module rule whose code is no longer the code the replay copied (REPLAYED_RULES)."""
+    stale, checked = [], {}
+    for path, name, recorded, copy in REPLAYED_RULES:
+        try:
+            text = re.sub(r"\s+", "", definition(strip_comments(read_compat(compat, path)), name))
+        except SystemExit as missing:
+            stale.append("%s %s (replayed as %s): %s" % (path, name, copy, missing))
+            continue
+        actual = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        checked["%s %s" % (path, name)] = actual
+        if actual != recorded:
+            stale.append("%s %s (replayed as %s): %s, recorded %s" % (path, name, copy, actual, recorded or "none"))
+    if stale:
+        raise SystemExit("mod-ascension-compat's code changed under a rule this generator replays - re-check the copy "
+                         "against it, then record the new fingerprint in REPLAYED_RULES:\n  " + "\n  ".join(stale))
+    return checked
+
+
+def cpp_constants(*texts):
+    """NAME = number pairs (enumerators, constants) of comment-free C++ texts, every value a name was given."""
+    values = collections.defaultdict(set)
+    for text in texts:
+        for m in re.finditer(r"\b([A-Z][A-Z0-9_]*)\s*=\s*(0x[0-9A-Fa-f]+|\d+)\b", text):
+            values[m.group(1)].add(int(m.group(2), 0))
+    return values
+
+
+def constant(values, token, where):
+    if token.isdigit():
+        return int(token)
+    found = values.get(token, set())
+    if len(found) != 1:
+        raise SystemExit("%s: %s resolves to %s" % (where, token, sorted(found) or "nothing"))
+    return next(iter(found))
+
+
+def read_racial_rules(compat, shared_defines):
+    """The data of mod-ascension-compat's racial rule, read from its source: the racial skill lines per race
+    (AscensionRacialAbilities::Skills, in order), the class variants outside the DBC masks (ClassVariantsOutsideDbcMask)
+    and the Felsworn capital rifts CanGrantAscensionRacialSpell gates by race (AscensionCompat.cpp)."""
+    header = strip_comments(read_compat(compat, RACIAL_HEADER))
+    values = cpp_constants(shared_defines, header)
+
+    def pairs(table):
+        m = re.search(r"std::array<\s*\w+\s*,\s*(\d+)\s*>\s+%s\s*=\s*\{\{(.*?)\}\};" % table, header, re.S)
+        if not m:
+            raise SystemExit("%s: table %s not found" % (RACIAL_HEADER, table))
+        rows = re.findall(r"\{\s*(\w+)\s*,\s*(\w+)\s*\}", m.group(2))
+        if len(rows) != int(m.group(1)):
+            raise SystemExit("%s: %s parsed %d rows, declared %s" % (RACIAL_HEADER, table, len(rows), m.group(1)))
+        return [(constant(values, a, RACIAL_HEADER), constant(values, b, RACIAL_HEADER)) for a, b in rows]
+
+    skills = pairs("Skills")
+    variants = pairs("ClassVariantsOutsideDbcMask")
+    source = strip_comments(read_compat(compat, COMPAT_SOURCE))
+    m = re.search(r"std::array<\s*uint32\s*,\s*(\d+)\s*>\s+FelswornCapitalRifts\s*=\s*\{([^{}]*)\};", source)
+    if not m:
+        raise SystemExit("%s: FelswornCapitalRifts not found" % COMPAT_SOURCE)
+    rifts = [int(x) for x in re.findall(r"\d+", m.group(2))]
+    if len(rifts) != int(m.group(1)):
+        raise SystemExit("%s: FelswornCapitalRifts parsed %d, declared %s" % (COMPAT_SOURCE, len(rifts), m.group(1)))
+    return skills, variants, rifts
 
 
 class Coa(object):
@@ -167,27 +284,29 @@ def deprecated(text):
 
 
 class Racial(object):
-    """CanGrantAscensionRacialSpell / CanLearn / IsSupersededRacialCopy of mod-ascension-compat, offline."""
+    """CanLearn / IsSupersededRacialCopy / CanGrantAscensionRacialSpell / GetAscensionRacialSpells of
+    mod-ascension-compat, offline (REPLAYED_RULES). skills and rifts are the module's tables (read_racial_rules);
+    variant(cls, ability) is IsClassVariantOutsideDbcMask - the module's is (cls, spell) in its variants table."""
 
-    def __init__(self, spells, by_spell, by_line):
+    def __init__(self, spells, by_spell, by_line, skills, variant, rifts):
         self.spells, self.by_spell, self.by_line = spells, by_spell, by_line
-        self.race_of = {line: race for race, line in RACIAL_SKILLS}
+        self.skills, self.variant, self.rifts = list(skills), variant, set(rifts)
+        self.race_of = {}
+        for race, line in self.skills:       # GetRace: the first row that names the line
+            self.race_of.setdefault(line, race)
 
     def can_learn(self, a, race, cls):
-        if self.race_of.get(a["line"]) != race:
+        if not race or self.race_of.get(a["line"]) != race or cls not in COA_CLASSES:
             return False
-        torrent = cls == CLASS_WITCH_HUNTER and a["line"] == SKILL_RACIAL_BLOODELF and \
-            a["spell"] == SPELL_ARCANE_TORRENT_ALL_RESOURCES
-        gift = cls == CLASS_SUN_CLERIC and a["line"] == SKILL_DRAENEI_RACIAL_COA and a["spell"] == SPELL_GIFT_OF_THE_NAARU_HYBRID
-        return a["acquire"] == 2 and a["minrank"] <= 1 and not a["superceded"] and \
-            (not a["race"] or a["race"] & (1 << (race - 1))) and \
-            (torrent or gift or not a["cls"] or a["cls"] & (1 << (cls - 1)))
+        return a["acquire"] == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN and a["minrank"] <= 1 and \
+            not a["superceded"] and (not a["race"] or a["race"] & (1 << (race - 1))) and \
+            (self.variant(cls, a) or not a["cls"] or a["cls"] & (1 << (cls - 1)))
 
     def superseded_copy(self, race, cls, sid):
-        name = self.spells.get(sid, {}).get("name")
-        if not name:
+        if sid not in self.spells:           # RacialSpellName: no SpellInfo
             return False
-        for r, line in RACIAL_SKILLS:
+        name = self.spells[sid]["name"]
+        for r, line in self.skills:
             if r != race:
                 continue
             for a in self.by_line.get(line, []):
@@ -199,7 +318,7 @@ class Racial(object):
 
     def can_grant(self, race, cls, sid):
         rows = self.by_spell.get(sid, [])
-        if sid in FELSWORN_CAPITAL_RIFTS:
+        if sid in self.rifts:
             for a in rows:
                 if a["race"] and not a["race"] & (1 << (race - 1)):
                     return False
@@ -217,6 +336,19 @@ class Racial(object):
             return 0
         return sum(1 << (r - 1) for r in allowed)
 
+    def racials(self, race, cls):
+        """What the module offers the character from its racial lines (CanLearn), what T2 takes away as a same-name
+        copy (IsSupersededRacialCopy), and so what it grants (GetAscensionRacialSpells)."""
+        offered, removes = set(), set()
+        for r, line in self.skills:
+            if r == race:
+                for a in self.by_line.get(line, []):
+                    if self.can_learn(a, race, cls):
+                        offered.add(a["spell"])
+                    if self.superseded_copy(race, cls, a["spell"]):
+                        removes.add(a["spell"])
+        return dict(offered=sorted(offered), t2_removes=sorted(removes), granted=sorted(offered - removes))
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -230,9 +362,11 @@ def main():
     ap.add_argument("--evidence")
     args = ap.parse_args()
 
+    rule_fingerprints = check_replayed_rules(args.compat)
     coa = Coa(args.coa_clone, args.pin)
     ccd = strip_comments(coa.show("src/server/coa/AscensionCustomClassData.h"))
     prog = strip_comments(coa.show("src/server/coa/AscensionSpellProgressionData.h"))
+    shared_defines = strip_comments(coa.show("src/server/shared/SharedDefines.h"))
     book = "modules/mod-spellbook/src/"
     class_spells = table_rows(ccd, "ClassSpells", ["ClassId", "RequiredLevel", "SpellId"])
     unresolved = table_rows(ccd, "UnresolvedTrainerSpells", ["ClassId", "RequiredLevel", "SpellId"])
@@ -254,11 +388,17 @@ def main():
                          repl_text[repl_text.find("TalentReplacements"):], re.S):
         replacements.append(dict(ClassId=int(m.group(1)), Parent=int(m.group(3)), Original=int(m.group(4)),
                                  Ranks=[int(a) for a, _ in re.findall(r"\{\s*(\d+)\s*,\s*(\d+)\s*\}", m.group(5))]))
+    declared = re.search(r"std::array<\s*TalentReplacement\s*,\s*(\d+)\s*>\s+TalentReplacements\b", repl_text)
+    if not declared or int(declared.group(1)) != len(replacements):
+        raise SystemExit("TalentReplacements: parsed %d rows, declared %s"
+                         % (len(replacements), declared and declared.group(1)))
 
     spells = spell_store(args.dbc_dir)
     by_spell, by_line, line_category = skill_line_abilities(args.dbc_dir)
     catalog, catalog_entries = catalog_spells(args.dbc_dir)
-    racial = Racial(spells, by_spell, by_line)
+    skills, variants, rifts = read_racial_rules(args.compat, shared_defines)
+    variant_pairs = set(variants)
+    racial = Racial(spells, by_spell, by_line, skills, lambda cls, a: (cls, a["spell"]) in variant_pairs, rifts)
     vd = Dbc(args.vanity_dbc)
     vanity = {struct.unpack_from("<I", vd.raw, 20 + i * vd.rsize + 4)[0] for i in range(vd.count)} - {0}
     spell_dbc_ids = set()
@@ -409,8 +549,11 @@ def main():
                    unresolved=collections.Counter(v.split(",")[0].split(":")[0] for v in unresolved_map.values()))
     print(json.dumps(summary, indent=1))
     if args.evidence:
+        racials = {"%d,%d" % (race, cls): racial.racials(race, cls) for race in PLAYABLE_RACES for cls in COA_CLASSES}
         json.dump(dict(summary=summary, rows=rows_out, excluded=excluded, unresolved=unresolved_map,
-                       per_class={c: dict(v) for c, v in per_class.items()}), open(args.evidence, "w"), indent=1)
+                       per_class={c: dict(v) for c, v in per_class.items()}, replayed_rules=rule_fingerprints,
+                       racial_rule=dict(skills=skills, variants=sorted(variant_pairs), rifts=rifts),
+                       racials=racials), open(args.evidence, "w"), indent=1)
 
 
 def write_header(args, coa, rows, per_class, excluded, catalog_entries, vanity_count):
