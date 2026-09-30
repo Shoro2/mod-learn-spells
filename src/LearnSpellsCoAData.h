@@ -6,8 +6,9 @@
 // stock classes their spells, and mod-ascension-compat asks it to again after a talent or specialization
 // change, at character creation and on an explicit repair.
 //
-// Source: Chapters of Azeroth 22dcb1386d5ac7b7fb6333fddb503a33ce8337f1
+// Source: Chapters of Azeroth 10fa1627f63bd46027ebcb69331d7a112a42caff
 //   src/server/coa/AscensionCustomClassData.h       ClassSpells                   -> Source CLASS
+//   src/server/coa/AscensionCompat.cpp              FelswornHordeCapitalRifts     -> Source CLASS
 //   src/server/coa/AscensionSpellProgressionData.h  Ranks (rank ladders)          -> Source RANK, RANK_ROOT
 //   modules/mod-spellbook/src/SpellbookOfferData.h  services the trainer sold     -> Source OFFER
 //   modules/mod-spellbook/src/SpellbookTrainerData.h NPCTrainer continuations     -> Source TRAINER
@@ -18,7 +19,7 @@
 // spell a class script makes a replacement target (mod-ascension-compat's check_replacement_learns); also a
 // spell that creates an Ascension vanity item (VanityCollection.dbc, 10764 items) or a deprecated one. The Book of
 // Artisans (trainer 200001) is never read: a spell only it teaches is a profession recipe.
-// 3648 rows, 45 left out.
+// 3642 rows, 51 left out.
 //
 // RequiredSpellId: the rank beneath, which the character must hold (0 = none). RaceMask: the races
 // mod-ascension-compat's CanGrantAscensionRacialSpell allows (0 = every race). Rows of a class are in
@@ -33,7 +34,7 @@
 
 namespace LearnSpells::CoAData
 {
-inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
+inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
 {{
     // class 12: CLASS 29, RANK 151
     { 12, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
@@ -405,7 +406,7 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 13, 80, 803626, 803625, 0, CoASource::RANK }, // Reclaim Soul (Rank 8)
     { 13, 84, 501149, 501148, 0, CoASource::RANK }, // Shadowflare (Rank 12)
     { 13, 90, 501150, 501149, 0, CoASource::RANK }, // Shadowflare (Rank 13)
-    // class 14: CLASS 46, RANK 98, OFFER 4
+    // class 14: CLASS 49, RANK 98, OFFER 1
     { 14, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 14, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 14, 1, 674, 0, 0, CoASource::CLASS }, // Dual Wield (Passive)
@@ -461,20 +462,20 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 14, 24, 501259, 501258, 0, CoASource::RANK }, // Twin Slice (Rank 4)
     { 14, 26, 535595, 0, 0, CoASource::CLASS }, // Fel Rift: Stormwind
     { 14, 26, 578345, 0, 0, CoASource::CLASS }, // Blur
+    { 14, 26, 535598, 0, 0, CoASource::CLASS }, // Fel Rift: Orgrimmar
     { 14, 26, 501293, 501292, 0, CoASource::RANK }, // Ruin (Rank 3)
     { 14, 26, 501316, 501315, 0, CoASource::RANK }, // Sargeron Smite (Rank 4)
-    { 14, 26, 535598, 0, 0, CoASource::OFFER }, // Fel Rift: Orgrimmar
     { 14, 28, 803882, 803881, 0, CoASource::RANK }, // Vengeful Pact (Rank 3)
     { 14, 28, 501284, 501283, 0, CoASource::RANK }, // Fel Fireball (Rank 5)
     { 14, 28, 560760, 560759, 0, CoASource::RANK }, // Annihilan Strike (Rank 3)
     { 14, 28, 803471, 803470, 0, CoASource::RANK }, // Azzinoth's Assault (Rank 3)
     { 14, 30, 535596, 0, 0, CoASource::CLASS }, // Fel Rift: Ironforge
     { 14, 30, 712483, 0, 0, CoASource::CLASS }, // Bane of Betrayal
+    { 14, 30, 535599, 0, 0, CoASource::CLASS }, // Fel Rift: Thunder Bluff
     { 14, 30, 523480, 523479, 0, CoASource::RANK }, // Man'ari Intuition (Rank 3)
     { 14, 30, 706416, 706415, 0, CoASource::RANK }, // Bane of Chaos (Rank 3)
     { 14, 30, 707524, 707523, 0, CoASource::RANK }, // Hateforged Barrier (Rank 3)
     { 14, 30, 501271, 501270, 0, CoASource::RANK }, // Immolation Aura (Rank 3)
-    { 14, 30, 535599, 0, 0, CoASource::OFFER }, // Fel Rift: Thunder Bluff
     { 14, 32, 535604, 0, 0, CoASource::CLASS }, // Fel Rift: Mannoroc Coven
     { 14, 32, 520689, 520688, 0, CoASource::RANK }, // Felwrath (Rank 3)
     { 14, 32, 802406, 802405, 0, CoASource::RANK }, // Felrend (Rank 3)
@@ -484,10 +485,10 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 14, 34, 560761, 560760, 0, CoASource::RANK }, // Annihilan Strike (Rank 4)
     { 14, 34, 501317, 501316, 0, CoASource::RANK }, // Sargeron Smite (Rank 5)
     { 14, 36, 535597, 0, 0, CoASource::CLASS }, // Fel Rift: Darnassus
+    { 14, 36, 535600, 0, 0, CoASource::CLASS }, // Fel Rift: Undercity
     { 14, 36, 552211, 552210, 0, CoASource::RANK }, // Manafeed (Rank 2)
     { 14, 36, 501285, 501284, 0, CoASource::RANK }, // Fel Fireball (Rank 6)
     { 14, 36, 803472, 803471, 0, CoASource::RANK }, // Azzinoth's Assault (Rank 4)
-    { 14, 36, 535600, 0, 0, CoASource::OFFER }, // Fel Rift: Undercity
     { 14, 38, 706417, 706416, 0, CoASource::RANK }, // Bane of Chaos (Rank 4)
     { 14, 38, 803883, 803882, 0, CoASource::RANK }, // Vengeful Pact (Rank 4)
     { 14, 38, 501272, 501271, 0, CoASource::RANK }, // Immolation Aura (Rank 4)
@@ -922,7 +923,7 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 16, 80, 501449, 501448, 0, CoASource::RANK }, // Kiss of the Clouds (Rank 9)
     { 16, 80, 501432, 501431, 0, CoASource::RANK }, // Electrocute (Rank 13)
     { 16, 84, 501399, 501398, 0, CoASource::RANK }, // Call Lightning (Rank 13)
-    // class 17: CLASS 43, RANK 75, OFFER 11
+    // class 17: CLASS 43, RANK 75, OFFER 5
     { 17, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 17, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 17, 1, 2764, 0, 0, CoASource::CLASS }, // Throw
@@ -955,7 +956,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 16, 802411, 801059, 0, CoASource::RANK }, // Flames of Xoroth (Rank 2)
     { 17, 18, 501500, 501499, 0, CoASource::RANK }, // Sever (Rank 3)
     { 17, 18, 802582, 0, 0, CoASource::OFFER }, // Warbringer (Rank 2)
-    { 17, 18, 806869, 0, 0, CoASource::OFFER }, // Shieldgore (Rank 2)
     { 17, 20, 707693, 0, 0, CoASource::CLASS }, // Mark of Blaumeux (Rank 1)
     { 17, 20, 803889, 0, 0, CoASource::CLASS }, // Hellrider
     { 17, 20, 804702, 0, 0, CoASource::CLASS }, // Dreadrider's Stomp
@@ -973,7 +973,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 24, 560664, 805671, 0, CoASource::RANK }, // Seeking Flame (Rank 2)
     { 17, 26, 803334, 0, 0, CoASource::CLASS }, // Melt
     { 17, 26, 501501, 501500, 0, CoASource::RANK }, // Sever (Rank 4)
-    { 17, 26, 806870, 806869, 0, CoASource::OFFER }, // Shieldgore (Rank 3)
     { 17, 28, 680940, 680939, 0, CoASource::RANK }, // Gore (Rank 3)
     { 17, 28, 806967, 806966, 0, CoASource::RANK }, // Hellmaw (Rank 3)
     { 17, 28, 802583, 802582, 0, CoASource::OFFER }, // Warbringer (Rank 3)
@@ -987,7 +986,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 34, 801067, 0, 0, CoASource::CLASS }, // Imprison
     { 17, 34, 501502, 501501, 0, CoASource::RANK }, // Sever (Rank 5)
     { 17, 34, 560665, 560664, 0, CoASource::RANK }, // Seeking Flame (Rank 3)
-    { 17, 34, 806871, 806870, 0, CoASource::OFFER }, // Shieldgore (Rank 4)
     { 17, 36, 501509, 501508, 0, CoASource::RANK }, // Meatsaw (Rank 3)
     { 17, 36, 680941, 680940, 0, CoASource::RANK }, // Gore (Rank 4)
     { 17, 36, 806968, 806967, 0, CoASource::RANK }, // Hellmaw (Rank 4)
@@ -1003,7 +1001,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 42, 804168, 0, 0, CoASource::CLASS }, // Hellbound Leash
     { 17, 42, 501503, 501502, 0, CoASource::RANK }, // Sever (Rank 6)
     { 17, 42, 707343, 707342, 0, CoASource::RANK }, // Mark of Korth'azz (Rank 4)
-    { 17, 42, 806872, 806871, 0, CoASource::OFFER }, // Shieldgore (Rank 5)
     { 17, 44, 680942, 680941, 0, CoASource::RANK }, // Gore (Rank 5)
     { 17, 44, 560666, 560665, 0, CoASource::RANK }, // Seeking Flame (Rank 4)
     { 17, 44, 806969, 806968, 0, CoASource::RANK }, // Hellmaw (Rank 5)
@@ -1019,7 +1016,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 50, 501504, 501503, 0, CoASource::RANK }, // Sever (Rank 7)
     { 17, 50, 707696, 707695, 0, CoASource::RANK }, // Mark of Blaumeux (Rank 4)
     { 17, 50, 503364, 503363, 0, CoASource::RANK }, // Chainwhip (Rank 5)
-    { 17, 50, 806873, 806872, 0, CoASource::OFFER }, // Shieldgore (Rank 6)
     { 17, 52, 707344, 707343, 0, CoASource::RANK }, // Mark of Korth'azz (Rank 5)
     { 17, 52, 680943, 680942, 0, CoASource::RANK }, // Gore (Rank 6)
     { 17, 52, 806970, 806969, 0, CoASource::RANK }, // Hellmaw (Rank 6)
@@ -1034,7 +1030,6 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 17, 58, 803731, 0, 0, CoASource::CLASS }, // Greater Mark of Zeliek
     { 17, 58, 501505, 501504, 0, CoASource::RANK }, // Sever (Rank 8)
     { 17, 58, 578119, 501510, 0, CoASource::RANK }, // Meatsaw (Rank 5)
-    { 17, 58, 806874, 806873, 0, CoASource::OFFER }, // Shieldgore (Rank 7)
     { 17, 60, 680300, 0, 0, CoASource::CLASS }, // Greater Mark of Korth’azz
     { 17, 60, 803730, 0, 0, CoASource::CLASS }, // Greater Mark of Rivendare
     { 17, 60, 804785, 0, 0, CoASource::CLASS }, // Hellfire Stirrups
@@ -2058,7 +2053,7 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 23, 76, 501968, 501967, 0, CoASource::RANK }, // Razorice (Rank 10)
     { 23, 76, 501980, 501979, 0, CoASource::RANK }, // Lichfrost (Rank 13)
     { 23, 76, 501999, 501998, 0, CoASource::RANK }, // Ice Barrage (Rank 9)
-    // class 24: CLASS 34, RANK 149, RANK_ROOT 1, TRAINER 2
+    // class 24: CLASS 35, RANK 149, TRAINER 2
     { 24, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 24, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 24, 1, 5019, 0, 0, CoASource::CLASS }, // Shoot
@@ -2066,11 +2061,11 @@ inline constexpr std::array<CoAClassSpell, 3648> ClassSpells =
     { 24, 1, 552011, 0, 0, CoASource::CLASS }, // Resilient Constitution
     { 24, 1, 800790, 0, 0, CoASource::CLASS }, // Flare Bolt (Rank 1)
     { 24, 1, 800792, 0, 0, CoASource::CLASS }, // Explode (Rank 1)
-    { 24, 1, 800196, 0, 0, CoASource::RANK_ROOT }, // Seal of Alysrazor (Rank 1)
     { 24, 2, 800806, 0, 0, CoASource::CLASS }, // Cinderheart (Rank 1)
     { 24, 4, 680387, 0, 0, CoASource::CLASS }, // Magma Skin
     { 24, 4, 803950, 0, 0, CoASource::CLASS }, // Lava Shard (Rank 1)
     { 24, 4, 502057, 800792, 0, CoASource::RANK }, // Explode (Rank 2)
+    { 24, 5, 800196, 0, 0, CoASource::CLASS }, // Seal of Alysrazor (Rank 1)
     { 24, 6, 570121, 0, 0, CoASource::CLASS }, // Conjure Campfire
     { 24, 6, 805476, 0, 0, CoASource::CLASS }, // Cindergrip (Rank 1)
     { 24, 6, 502011, 800790, 0, CoASource::RANK }, // Flare Bolt (Rank 2)
