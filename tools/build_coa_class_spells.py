@@ -4,7 +4,9 @@ r"""Generate src/LearnSpellsCoAData.h: the level-based spells of the 21 Chapters
 What a CoA class learns on a level-up is what CoA's own class trainer - the Books of Ascension, module
 mod-spellbook of Chapters of Azeroth - would sell it at that level (spellbook.cpp BuildRows, window view):
 
-  1. the class progression spells, ClassSpells in src/server/coa/AscensionCustomClassData.h, at their level;
+  1. the class progression spells, ClassSpells in src/server/coa/AscensionCustomClassData.h, at their level, and the
+     Felsworn's Horde-capital rifts, FelswornHordeCapitalRifts in src/server/coa/AscensionCompat.cpp, which CoA's
+     SynchronizeProgression grants at their level and takes back below it exactly as it does ClassSpells;
   2. the rank ladders, AscensionProgression::Ranks in AscensionSpellProgressionData.h: a ladder's first rank at its
      Spell.dbc BaseLevel when nothing else grants it, every higher rank at its level and requiring the rank beneath;
   3. SpellbookOfferData, SpellbookTrainerData and SpellbookRankData: the services CoA's captured original trainer
@@ -369,6 +371,13 @@ def main():
     shared_defines = strip_comments(coa.show("src/server/shared/SharedDefines.h"))
     book = "modules/mod-spellbook/src/"
     class_spells = table_rows(ccd, "ClassSpells", ["ClassId", "RequiredLevel", "SpellId"])
+    # CoA's SynchronizeProgression grants the Felsworn (CLASS_DEMON_HUNTER) its Horde-capital rifts at their level and
+    # takes them back below it, exactly as it does ClassSpells: rows of CLASS, which mod-ascension-compat's reconcile
+    # takes back the same way (the Alliance-capital rifts are ClassSpells rows).
+    felsworn = constant(cpp_constants(shared_defines), "CLASS_DEMON_HUNTER", "SharedDefines.h")
+    horde_rifts = [dict(ClassId=felsworn, RequiredLevel=r["RequiredLevel"], SpellId=r["SpellId"]) for r in table_rows(
+        strip_comments(coa.show("src/server/coa/AscensionCompat.cpp")), "FelswornHordeCapitalRifts",
+        ["SpellId", "RequiredLevel"])]
     unresolved = table_rows(ccd, "UnresolvedTrainerSpells", ["ClassId", "RequiredLevel", "SpellId"])
     ranks = table_rows(prog, "Ranks", ["ClassId", "FirstSpellId", "SpellId", "RequiredLevel"])
     offers = table_rows(strip_comments(coa.show(book + "SpellbookOfferData.h")), "Offers",
@@ -399,6 +408,9 @@ def main():
     skills, variants, rifts = read_racial_rules(args.compat, shared_defines)
     variant_pairs = set(variants)
     racial = Racial(spells, by_spell, by_line, skills, lambda cls, a: (cls, a["spell"]) in variant_pairs, rifts)
+    for r in horde_rifts:
+        if r["SpellId"] not in spells or not 1 <= r["RequiredLevel"] <= 80:
+            raise SystemExit("FelswornHordeCapitalRifts row %s: not a spell of the store at a level 1-80" % r)
     vd = Dbc(args.vanity_dbc)
     vanity = {struct.unpack_from("<I", vd.raw, 20 + i * vd.rsize + 4)[0] for i in range(vd.count)} - {0}
     spell_dbc_ids = set()
@@ -430,7 +442,7 @@ def main():
                 return
             rows[sid] = dict(ClassId=cls, Level=level, SpellId=sid, RequiredSpellId=req, Source=source)
 
-        for e in class_spells:
+        for e in class_spells + horde_rifts:
             if e["ClassId"] == cls:
                 add(e["SpellId"], e["RequiredLevel"], 0, "CLASS")
         ladders = collections.OrderedDict()
@@ -553,7 +565,7 @@ def main():
         json.dump(dict(summary=summary, rows=rows_out, excluded=excluded, unresolved=unresolved_map,
                        per_class={c: dict(v) for c, v in per_class.items()}, replayed_rules=rule_fingerprints,
                        racial_rule=dict(skills=skills, variants=sorted(variant_pairs), rifts=rifts),
-                       racials=racials), open(args.evidence, "w"), indent=1)
+                       horde_rifts=horde_rifts, racials=racials), open(args.evidence, "w"), indent=1)
 
 
 def write_header(args, coa, rows, per_class, excluded, catalog_entries, vanity_count):
@@ -569,6 +581,7 @@ def write_header(args, coa, rows, per_class, excluded, catalog_entries, vanity_c
     w("//")
     w("// Source: Chapters of Azeroth %s" % coa.sha)
     w("//   src/server/coa/AscensionCustomClassData.h       ClassSpells                   -> Source CLASS")
+    w("//   src/server/coa/AscensionCompat.cpp              FelswornHordeCapitalRifts     -> Source CLASS")
     w("//   src/server/coa/AscensionSpellProgressionData.h  Ranks (rank ladders)          -> Source RANK, RANK_ROOT")
     w("//   modules/mod-spellbook/src/SpellbookOfferData.h  services the trainer sold     -> Source OFFER")
     w("//   modules/mod-spellbook/src/SpellbookTrainerData.h NPCTrainer continuations     -> Source TRAINER")
