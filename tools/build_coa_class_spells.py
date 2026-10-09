@@ -15,20 +15,24 @@ mod-spellbook of Chapters of Azeroth - would sell it at that level (spellbook.cp
 
 A spell the talent trees grant is not a trainer row (SpellbookTreeSpellData, as in the window), and neither is a spell
 the Forgotten Land talent system owns: a Character Advancement entry's spell (CharacterAdvancement.dbc read as
-mod-ascension-compat's LoadCoATalentData reads it), a TalentReplacements rank or target or a TaughtAbilities spell
-(mod-ascension-compat's data headers), or a spell a class script makes a replacement target (resolved by
-mod-ascension-compat's own gate, tools/check_replacement_learns.py --targets). A spell that creates an Ascension vanity item (VanityCollection.dbc) or whose
-name marks it deprecated is left out too. Nothing of the Book of Artisans (trainer 200001) is read: a spell only it
-teaches is a profession recipe.
+mod-ascension-compat's LoadCoATalentData reads it), a TalentReplacements rank or target - a talent's, or an aura
+window's (RequiresAura, CoA b03b7cfe) - or a TaughtAbilities spell (mod-ascension-compat's data headers), or a
+spell a class script makes a replacement target (resolved by mod-ascension-compat's own gate,
+tools/check_replacement_learns.py --targets). A spell that creates an Ascension vanity item (VanityCollection.dbc) or
+whose name marks it deprecated is left out too. Nothing of the Book of Artisans (trainer 200001) is read: a spell only
+it teaches is a profession recipe. A CoA row whose spell the server's Spell.dbc does not carry is no row (the
+evidence JSON lists them as not_in_store): it becomes one when a spell package brings the spell.
 
 RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race). The
 replay reads the rule's data from the module's source - the racial skill lines (AscensionRacialAbilities::Skills),
-the class variants outside the DBC masks (ClassVariantsOutsideDbcMask, CoA c9389794) and the Felsworn capital rifts
-(AscensionCompat.cpp) - with the enum names resolved through CoA's src/server/shared/SharedDefines.h at the pin and
-the header's own enums. Its logic is a copy of the module's functions, and a copy is only right while the module runs
-the code it copied: every copied function (REPLAYED_RULES) is pinned by the SHA-256 of its text without comments and
-whitespace, and the generator refuses to run when one differs. Re-check the replay against the module's new code,
-then record the fingerprint the refusal prints.
+the class variants outside the DBC masks (ClassVariantsOutsideDbcMask, CoA c9389794) and the Felsworn rifts the
+faction rule gates by race (AscensionFelsworn::CanLearnRift, CoA cf6b1797) - with the enum names resolved through
+CoA's src/server/shared/SharedDefines.h at the pin and the header's own enums. The faction rule reads the race masks
+of the rifts' SkillLineAbility rows, so a rift without a race-masked row on this server is every race's. Its logic
+is a copy of the module's functions, and a copy is only right while the module runs the code it copied: every copied
+function (REPLAYED_RULES) is pinned by the SHA-256 of its text without comments and whitespace, and the generator
+refuses to run when one differs. Re-check the replay against the module's new code, then record the fingerprint the
+refusal prints.
 
 Every input is read, never executed: the CoA clone through `git show <pin>:<path>`, the DBC files directly.
 
@@ -54,9 +58,14 @@ ITEM_EFFECTS = (24, 157, 34, 66)
 
 RACIAL_HEADER = "src/AscensionRacialAbilities.h"
 COMPAT_SOURCE = "src/AscensionCompat.cpp"
+FELSWORN_SOURCE = "src/AscensionFelsworn.cpp"
 # The mod-ascension-compat functions whose logic this generator copies, with the SHA-256 of each one's text (comments
 # and whitespace removed) as last checked against the copy: (file, function, fingerprint, where the copy lives).
-# Checked against mod-ascension-compat 00dca15 (CoA 10fa1627f63b merged).
+# Checked against mod-ascension-compat c18ae4e74c48 (CoA fc359be9bf79 merged). There CanGrantAscensionRacialSpell asks
+# AscensionFelsworn::CanLearnRift first (CoA cf6b1797): the per-row race-mask test it made inline before, now over
+# eight rifts instead of six (Theramore 535601 and Stonard 535602 join the six capitals). LoadCoATalentData now also
+# keeps a paid entry's prerequisites and two flags (CoA b8b7252c / d60f0243); the catalog of spells it builds, which
+# catalog_spells copies, is unchanged.
 REPLAYED_RULES = (
     (RACIAL_HEADER, "GetRace",
      "6bb00b110a7d71c3599d0476c566ae069f81ceabcf0bb3d5872f859fc91afd38", "Racial.race_of"),
@@ -69,9 +78,12 @@ REPLAYED_RULES = (
     (COMPAT_SOURCE, "GetAscensionRacialSpells",
      "75f1d432e4c8af933451b27dc0032d8f2f5e69328fb2ef2c46ae996d982f42a2", "Racial.racials (evidence only)"),
     (COMPAT_SOURCE, "CanGrantAscensionRacialSpell",
-     "05d576315e3fb38f49fe9f8cac6b4f69be5e53fbce289e4a8e3aed9599b03178", "Racial.can_grant"),
+     "ac721205c3e8d7232a608457c46e0670c1a6757a7f83ee94fed2ab28141c99d7", "Racial.can_grant"),
+    (FELSWORN_SOURCE, "CanLearnRift",
+     "53dbf11650222debea18c058aea3d62bc992c827ccfdfa05ccca4abe29dcf73e",
+     "Racial.can_grant (the rift faction rule) and read_racial_rules (its rifts)"),
     ("src/AscensionCoATalentData.cpp", "LoadCoATalentData",
-     "6621172e37ccf153133af3f3483818cfb784d71e9ecab68a23bb3f8800fa69f3", "catalog_spells"),
+     "f77588ff9cad87a5aef92ef1aa780950e7a58db1663ae375c58af3319f431804", "catalog_spells"),
     ("src/AscensionClassMechanics.cpp", "HasDeprecatedWord",
      "1722fbc876ffd5f01f6a3a1b106318a935d3542c81d13d0fdbf4834e19cf8b36", "deprecated"),
 )
@@ -182,7 +194,8 @@ def constant(values, token, where):
 def read_racial_rules(compat, shared_defines):
     """The data of mod-ascension-compat's racial rule, read from its source: the racial skill lines per race
     (AscensionRacialAbilities::Skills, in order), the class variants outside the DBC masks (ClassVariantsOutsideDbcMask)
-    and the Felsworn capital rifts CanGrantAscensionRacialSpell gates by race (AscensionCompat.cpp)."""
+    and the Felsworn rifts CanGrantAscensionRacialSpell gates by race - the factionRifts of
+    AscensionFelsworn::CanLearnRift (AscensionFelsworn.cpp), read from the function the fingerprint pins."""
     header = strip_comments(read_compat(compat, RACIAL_HEADER))
     values = cpp_constants(shared_defines, header)
 
@@ -197,13 +210,13 @@ def read_racial_rules(compat, shared_defines):
 
     skills = pairs("Skills")
     variants = pairs("ClassVariantsOutsideDbcMask")
-    source = strip_comments(read_compat(compat, COMPAT_SOURCE))
-    m = re.search(r"std::array<\s*uint32\s*,\s*(\d+)\s*>\s+FelswornCapitalRifts\s*=\s*\{([^{}]*)\};", source)
+    rule = definition(strip_comments(read_compat(compat, FELSWORN_SOURCE)), "CanLearnRift")
+    m = re.search(r"std::array<\s*uint32\s*,\s*(\d+)\s*>\s+factionRifts\s*=\s*\{([^{}]*)\};", rule)
     if not m:
-        raise SystemExit("%s: FelswornCapitalRifts not found" % COMPAT_SOURCE)
+        raise SystemExit("%s: CanLearnRift's factionRifts not found" % FELSWORN_SOURCE)
     rifts = [int(x) for x in re.findall(r"\d+", m.group(2))]
     if len(rifts) != int(m.group(1)):
-        raise SystemExit("%s: FelswornCapitalRifts parsed %d, declared %s" % (COMPAT_SOURCE, len(rifts), m.group(1)))
+        raise SystemExit("%s: factionRifts parsed %d, declared %s" % (FELSWORN_SOURCE, len(rifts), m.group(1)))
     return skills, variants, rifts
 
 
@@ -286,9 +299,10 @@ def deprecated(text):
 
 
 class Racial(object):
-    """CanLearn / IsSupersededRacialCopy / CanGrantAscensionRacialSpell / GetAscensionRacialSpells of
-    mod-ascension-compat, offline (REPLAYED_RULES). skills and rifts are the module's tables (read_racial_rules);
-    variant(cls, ability) is IsClassVariantOutsideDbcMask - the module's is (cls, spell) in its variants table."""
+    """CanLearn / IsSupersededRacialCopy / CanGrantAscensionRacialSpell (with AscensionFelsworn::CanLearnRift) /
+    GetAscensionRacialSpells of mod-ascension-compat, offline (REPLAYED_RULES). skills and rifts are the module's
+    tables (read_racial_rules); variant(cls, ability) is IsClassVariantOutsideDbcMask - the module's is (cls, spell) in
+    its variants table."""
 
     def __init__(self, spells, by_spell, by_line, skills, variant, rifts):
         self.spells, self.by_spell, self.by_line = spells, by_spell, by_line
@@ -320,7 +334,7 @@ class Racial(object):
 
     def can_grant(self, race, cls, sid):
         rows = self.by_spell.get(sid, [])
-        if sid in self.rifts:
+        if sid in self.rifts:                # CanLearnRift: a rift's race-masked row must name the race
             for a in rows:
                 if a["race"] and not a["race"] & (1 << (race - 1)):
                     return False
@@ -393,10 +407,13 @@ def main():
                         ["ClassId", "SpecId", "RequiredLevel", "ParentSpellId", "SpellId"])
     repl_text = rd("AscensionTalentReplacementData.h")
     replacements = []
-    for m in re.finditer(r"\{\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\{\{(.*?)\}\}\s*\}",
-                         repl_text[repl_text.find("TalentReplacements"):], re.S):
+    # { ClassId, SpecId, ParentSpellId, OriginalSpellId, {{ ranks }} [, RequiresAura] }: an aura-gated row (CoA
+    # b03b7cfe) is a window the parent aura opens, not a talent - its ranks are the replacement system's all the same
+    for m in re.finditer(r"\{\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\{\{(.*?)\}\}"
+                         r"\s*(?:,\s*(true|false)\s*)?\}", repl_text[repl_text.find("TalentReplacements"):], re.S):
         replacements.append(dict(ClassId=int(m.group(1)), Parent=int(m.group(3)), Original=int(m.group(4)),
-                                 Ranks=[int(a) for a, _ in re.findall(r"\{\s*(\d+)\s*,\s*(\d+)\s*\}", m.group(5))]))
+                                 Ranks=[int(a) for a, _ in re.findall(r"\{\s*(\d+)\s*,\s*(\d+)\s*\}", m.group(5))],
+                                 RequiresAura=m.group(6) == "true"))
     declared = re.search(r"std::array<\s*TalentReplacement\s*,\s*(\d+)\s*>\s+TalentReplacements\b", repl_text)
     if not declared or int(declared.group(1)) != len(replacements):
         raise SystemExit("TalentReplacements: parsed %d rows, declared %s"
@@ -421,7 +438,8 @@ def main():
     for e in replacements:
         for s in e["Ranks"]:
             if s:
-                talent_owned[e["ClassId"]][s] = "TalentReplacements rank of talent %d" % e["Parent"]
+                talent_owned[e["ClassId"]][s] = "TalentReplacements rank of %s %d" % (
+                    "aura window" if e["RequiresAura"] else "talent", e["Parent"])
     for e in taught:
         talent_owned[e["ClassId"]][e["SpellId"]] = "TaughtAbilities spell of %d" % e["ParentSpellId"]
     # every spell a class script of mod-ascension-compat makes a replacement target: the module's own gate resolves
@@ -433,11 +451,14 @@ def main():
         raise SystemExit("the replacement gate resolved only %d targets" % len(replacement_targets))
 
     rows_out, excluded, per_class = [], [], {}
+    not_in_store = collections.OrderedDict()   # CoA rows this server's Spell.dbc cannot carry: (class, spell) -> row
     for cls in COA_CLASSES:
         tree_spells = {r["SpellId"] for r in tree if r["ClassId"] == cls}
         rows = collections.OrderedDict()
 
         def add(sid, level, req, source):
+            if sid and sid not in spells and sid not in tree_spells:
+                not_in_store.setdefault((cls, sid), dict(ClassId=cls, Level=level, SpellId=sid, Source=source))
             if not sid or sid not in spells or sid in tree_spells or sid in rows:
                 return
             rows[sid] = dict(ClassId=cls, Level=level, SpellId=sid, RequiredSpellId=req, Source=source)
@@ -558,14 +579,17 @@ def main():
                    by_source=dict(collections.Counter(r["Source"] for r in rows_out)),
                    race_masked=sum(1 for r in rows_out if r["RaceMask"]),
                    with_requirement=sum(1 for r in rows_out if r["RequiredSpellId"]),
-                   unresolved=collections.Counter(v.split(",")[0].split(":")[0] for v in unresolved_map.values()))
+                   unresolved=collections.Counter(v.split(",")[0].split(":")[0] for v in unresolved_map.values()),
+                   not_in_store=len(not_in_store))
     print(json.dumps(summary, indent=1))
     if args.evidence:
         racials = {"%d,%d" % (race, cls): racial.racials(race, cls) for race in PLAYABLE_RACES for cls in COA_CLASSES}
+        # not_in_store: what a spell package round would still turn into rows (see the docstring)
         json.dump(dict(summary=summary, rows=rows_out, excluded=excluded, unresolved=unresolved_map,
                        per_class={c: dict(v) for c, v in per_class.items()}, replayed_rules=rule_fingerprints,
                        racial_rule=dict(skills=skills, variants=sorted(variant_pairs), rifts=rifts),
-                       horde_rifts=horde_rifts, racials=racials), open(args.evidence, "w"), indent=1)
+                       horde_rifts=horde_rifts, racials=racials, not_in_store=list(not_in_store.values())),
+                  open(args.evidence, "w"), indent=1)
 
 
 def write_header(args, coa, rows, per_class, excluded, catalog_entries, vanity_count):
