@@ -1,0 +1,12 @@
+# Log (newest first)
+
+- 2026-09-30 feat(data): regenerate the CoA class spells at CoA 10fa1627f63b on the merged class module (04de1e6)
+- 2026-09-30 feat(tools): make the Felsworn's Horde-capital rifts CLASS rows, as CoA's class progression treats them (51ade65)
+- 2026-09-30 feat(tools): replay the racial rule from mod-ascension-compat's source and pin the copied logic (a6160a8)
+- 2026-09-27 fix(data): take the CoA spells the sweep taught back from stock-class characters (a6cc6c8)
+- 2026-09-27 fix(learn): take a stock class's spell only from a row that fits the class (308fe64)
+- 2026-09-27 feat: teach the 21 CoA classes their level spells on the level-up (5152350)
+- 2026-09-27 feat(data): the level spells of the 21 CoA classes as rows (99b4a4a)
+- 2026-09-20 style(learn): include SharedDefines.h explicitly (6e1266f)
+- 2026-09-20 fix(learn): do not auto-teach the 21 CoA classes (d8cc4ee)
+- 2026-07-13 Initial import: mod-learn-spells (58c65da)
