@@ -1,6 +1,4 @@
-# Change log
-
-Newest first.
+# Log (newest first)
 
 - 2026-10-09 — CoA catch-up round 4 (CU4-WP6) on branch `claude/coa-round4-ad93e862`, not yet on `main`. Built and
   installed by the round's install step together with mod-ascension-compat `claude/coa-round4-ad93e862`
@@ -26,5 +24,13 @@ Newest first.
     on Crude Waterskin 802808, which nothing grants here (CoA grants it through SkillLineAbility 86420); the startup
     line counts them as 7 problems and no Ranger learns them.
 
-- Earlier changes are in `git log`: OI-9 (`99b4a4a`, `5152350`), OI-10 (`308fe64`, `a6cc6c8`), CU3-WP6 (`a6160a8`,
-  `51ade65`, `04de1e6`).
+- 2026-09-30 feat(data): regenerate the CoA class spells at CoA 10fa1627f63b on the merged class module (04de1e6)
+- 2026-09-30 feat(tools): make the Felsworn's Horde-capital rifts CLASS rows, as CoA's class progression treats them (51ade65)
+- 2026-09-30 feat(tools): replay the racial rule from mod-ascension-compat's source and pin the copied logic (a6160a8)
+- 2026-09-27 fix(data): take the CoA spells the sweep taught back from stock-class characters (a6cc6c8)
+- 2026-09-27 fix(learn): take a stock class's spell only from a row that fits the class (308fe64)
+- 2026-09-27 feat: teach the 21 CoA classes their level spells on the level-up (5152350)
+- 2026-09-27 feat(data): the level spells of the 21 CoA classes as rows (99b4a4a)
+- 2026-09-20 style(learn): include SharedDefines.h explicitly (6e1266f)
+- 2026-09-20 fix(learn): do not auto-teach the 21 CoA classes (d8cc4ee)
+- 2026-07-13 Initial import: mod-learn-spells (58c65da)
