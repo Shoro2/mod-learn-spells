@@ -29,7 +29,7 @@ database (2).
 The stock classes learn by sweeping the spell store for their spell family. A Chapters-of-Azeroth class (ids 12-32)
 has no family of its own, so it learns from a table instead: `src/LearnSpellsCoAData.h`, what CoA's own class trainer
 (its Books of Ascension) sells a character of the class at each level - CoA's class progression spells, the rank
-ladders and the trainer-taught spells, 3,642 rows. The trigger is the same level-up (`LearnSpells.Enable`,
+ladders and the trainer-taught spells, 3,656 rows. The trigger is the same level-up (`LearnSpells.Enable`,
 `LearnSpells.MaxLevel`); the table is walked up to the level reached, so a character that is already above a row's
 level gets it at its next level change. Profession recipes and Ascension's vanity spells are not rows.
 
@@ -44,9 +44,11 @@ mod-ascension-compat's reconcile, as CoA does.
 - `tools/build_coa_class_spells.py` regenerates the table from a CoA clone at the pinned commit, mod-ascension-compat's
   data and the server DBCs (usage in the file). Re-run it when the CoA pin, the class data or the spell package
   changes; mod-ascension-compat's `tools/build_class_spellbook_bindings.py` reads the same table. The race masks
-  replay mod-ascension-compat's racial rule: its tables are read from that module's source, and the functions the
-  generator copies are pinned by fingerprint, so the generator refuses to run when one of them changed until the copy
-  is re-checked (`REPLAYED_RULES`).
+  replay mod-ascension-compat's racial rule and its Felsworn rift faction rule (`AscensionFelsworn::CanLearnRift`: a
+  rift whose SkillLineAbility row carries a race mask goes to those races only): their tables are read from that
+  module's source, and the functions the generator copies are pinned by fingerprint, so the generator refuses to run
+  when one of them changed until the copy is re-checked (`REPLAYED_RULES`). A CoA row whose spell the server's
+  `Spell.dbc` does not carry is no row; the generator's `--evidence` lists them (`not_in_store`).
 - A row whose spell the store cannot validate is skipped and named once at startup (`mod-learn-spells: ... problem(s)`
   in the Server log).
 

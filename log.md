@@ -1,0 +1,30 @@
+# Change log
+
+Newest first.
+
+- 2026-10-09 — CoA catch-up round 4 (CU4-WP6) on branch `claude/coa-round4-ad93e862`, not yet on `main`. Built and
+  installed by the round's install step together with mod-ascension-compat `claude/coa-round4-ad93e862`
+  (`c18ae4e74c48`), which includes `LearnSpellsCoA.h`.
+  - `tools/build_coa_class_spells.py` re-checked against the merged class module, where it refused on two copied
+    rules: `CanGrantAscensionRacialSpell` now asks `AscensionFelsworn::CanLearnRift` (CoA `cf6b1797`: the same per-row
+    race-mask test over eight rifts instead of six; the rifts are read from that function, which is pinned as a ninth
+    rule), and `LoadCoATalentData` keeps prerequisites but builds the same catalog (new fingerprint only).
+    `TalentReplacements` rows may end in `RequiresAura` (CoA `b03b7cfe`, aura windows). The evidence JSON lists the
+    CoA rows the server's `Spell.dbc` cannot carry (`not_in_store`).
+  - `src/LearnSpellsCoAData.h` regenerated at CoA `fc359be9bf79` with CU4-WP2's staged server `Spell.dbc`
+    (`19a9a549`): 3,642 -> 3,656 rows.
+    Out: Warbringer ranks 2-6 (Knight of Xoroth), now ranks of the talent 570727 (CoA `132c6eb3`).
+    In from CoA's range: Running Wild 800175 at 20 (Bloodmage, CoA `1554e3c2`), Chromatic Shard rank 9 at 60
+    (Chronomancer, CoA `09e723bf`), Waterskin ranks 2-8 (Ranger, CoA `4be4259e`).
+    In because their spells reached our server `Spell.dbc` (CoA's Books sold them before): Brutal Shout rank 7 at 65
+    (Barbarian), Aeroblast ranks 8-10 (Stormbringer) and Sanguinary Offering rank 6 at 72 (Bloodmage) with CU4-WP2's
+    package; Deathwind ranks 8-12 (Reaper) with round 3's final package, after round 3's generation.
+    Race masks: Fel Rift: Theramore for the Alliance races only, Fel Rift: Stonard for the Horde races only (CoA
+    `cf6b1797` reading our SkillLineAbility rows 40204 / 40205). The six capital rifts stay every race's: our server
+    has none of CoA's race-masked rows 23482-23487.
+  - Known gap: the seven Waterskin rows are not valid on our server yet (their items 10521-10528 are missing) and hang
+    on Crude Waterskin 802808, which nothing grants here (CoA grants it through SkillLineAbility 86420); the startup
+    line counts them as 7 problems and no Ranger learns them.
+
+- Earlier changes are in `git log`: OI-9 (`99b4a4a`, `5152350`), OI-10 (`308fe64`, `a6cc6c8`), CU3-WP6 (`a6160a8`,
+  `51ade65`, `04de1e6`).

@@ -6,7 +6,7 @@
 // stock classes their spells, and mod-ascension-compat asks it to again after a talent or specialization
 // change, at character creation and on an explicit repair.
 //
-// Source: Chapters of Azeroth 10fa1627f63bd46027ebcb69331d7a112a42caff
+// Source: Chapters of Azeroth fc359be9bf79ffb532c192d7afe754be21feba40
 //   src/server/coa/AscensionCustomClassData.h       ClassSpells                   -> Source CLASS
 //   src/server/coa/AscensionCompat.cpp              FelswornHordeCapitalRifts     -> Source CLASS
 //   src/server/coa/AscensionSpellProgressionData.h  Ranks (rank ladders)          -> Source RANK, RANK_ROOT
@@ -19,7 +19,7 @@
 // spell a class script makes a replacement target (mod-ascension-compat's check_replacement_learns); also a
 // spell that creates an Ascension vanity item (VanityCollection.dbc, 10764 items) or a deprecated one. The Book of
 // Artisans (trainer 200001) is never read: a spell only it teaches is a profession recipe.
-// 3642 rows, 51 left out.
+// 3656 rows, 56 left out.
 //
 // RequiredSpellId: the rank beneath, which the character must hold (0 = none). RaceMask: the races
 // mod-ascension-compat's CanGrantAscensionRacialSpell allows (0 = every race). Rows of a class are in
@@ -34,9 +34,9 @@
 
 namespace LearnSpells::CoAData
 {
-inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
+inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
 {{
-    // class 12: CLASS 29, RANK 151
+    // class 12: CLASS 29, RANK 151, TRAINER 1
     { 12, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 12, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 12, 1, 674, 0, 0, CoASource::CLASS }, // Dual Wield (Passive)
@@ -204,6 +204,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 12, 64, 503407, 503406, 0, CoASource::RANK }, // Headhunter's Spear (Rank 7)
     { 12, 65, 706405, 706404, 0, CoASource::RANK }, // Splash Zone (Rank 6)
     { 12, 65, 503414, 503413, 0, CoASource::RANK }, // Berserker Axe (Rank 8)
+    { 12, 65, 300887, 300886, 0, CoASource::TRAINER }, // Brutal Shout (Rank 7)
     { 12, 66, 501035, 501034, 0, CoASource::RANK }, // Smash (Rank 10)
     { 12, 68, 501002, 501001, 0, CoASource::RANK }, // Brutal Swing (Rank 8)
     { 12, 68, 501010, 501009, 0, CoASource::RANK }, // Crush (Rank 9)
@@ -492,14 +493,14 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 14, 38, 706417, 706416, 0, CoASource::RANK }, // Bane of Chaos (Rank 4)
     { 14, 38, 803883, 803882, 0, CoASource::RANK }, // Vengeful Pact (Rank 4)
     { 14, 38, 501272, 501271, 0, CoASource::RANK }, // Immolation Aura (Rank 4)
-    { 14, 40, 535601, 0, 0, CoASource::CLASS }, // Fel Rift: Theramore
+    { 14, 40, 535601, 0, 1101, CoASource::CLASS }, // Fel Rift: Theramore
     { 14, 40, 802075, 0, 0, CoASource::CLASS }, // Blood of Mannoroth
     { 14, 40, 520690, 520689, 0, CoASource::RANK }, // Felwrath (Rank 4)
     { 14, 40, 523481, 523480, 0, CoASource::RANK }, // Man'ari Intuition (Rank 4)
     { 14, 40, 707525, 707524, 0, CoASource::RANK }, // Hateforged Barrier (Rank 4)
     { 14, 40, 802407, 802406, 0, CoASource::RANK }, // Felrend (Rank 4)
     { 14, 40, 560762, 560761, 0, CoASource::RANK }, // Annihilan Strike (Rank 5)
-    { 14, 40, 535602, 0, 0, CoASource::OFFER }, // Fel Rift: Stonard
+    { 14, 40, 535602, 0, 690, CoASource::OFFER }, // Fel Rift: Stonard
     { 14, 42, 501327, 501326, 0, CoASource::RANK }, // Illidari Intuition (Rank 3)
     { 14, 42, 501295, 501294, 0, CoASource::RANK }, // Ruin (Rank 5)
     { 14, 42, 501318, 501317, 0, CoASource::RANK }, // Sargeron Smite (Rank 6)
@@ -740,7 +741,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 15, 76, 681352, 681351, 0, CoASource::RANK }, // Stake (Rank 7)
     { 15, 78, 501354, 501353, 0, CoASource::RANK }, // Tormentor (Rank 12)
     { 15, 80, 501355, 501354, 0, CoASource::RANK }, // Tormentor (Rank 13)
-    // class 16: CLASS 40, RANK 140, OFFER 1, BOOK_RANK 1
+    // class 16: CLASS 40, RANK 140, OFFER 1, BOOK_RANK 4
     { 16, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 16, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 16, 1, 5019, 0, 0, CoASource::CLASS }, // Shoot
@@ -909,6 +910,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 16, 66, 501447, 501446, 0, CoASource::RANK }, // Kiss of the Clouds (Rank 7)
     { 16, 66, 806434, 806433, 0, CoASource::RANK }, // Aerodynamics (Rank 6)
     { 16, 66, 807717, 807716, 0, CoASource::RANK }, // Deluge (Rank 6)
+    { 16, 66, 501456, 501455, 0, CoASource::BOOK_RANK }, // Aeroblast (Rank 8)
     { 16, 68, 572867, 572866, 0, CoASource::RANK }, // Stormflow (Rank 8)
     { 16, 68, 501429, 501428, 0, CoASource::RANK }, // Electrocute (Rank 10)
     { 16, 69, 501396, 501395, 0, CoASource::RANK }, // Call Lightning (Rank 10)
@@ -917,13 +919,15 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 16, 74, 501448, 501447, 0, CoASource::RANK }, // Kiss of the Clouds (Rank 8)
     { 16, 74, 501397, 501396, 0, CoASource::RANK }, // Call Lightning (Rank 11)
     { 16, 74, 501430, 501429, 0, CoASource::RANK }, // Electrocute (Rank 11)
+    { 16, 74, 501457, 501455, 0, CoASource::BOOK_RANK }, // Aeroblast (Rank 9)
     { 16, 76, 806436, 806435, 0, CoASource::RANK }, // Aerodynamics (Rank 8)
     { 16, 78, 501431, 501430, 0, CoASource::RANK }, // Electrocute (Rank 12)
     { 16, 79, 501398, 501397, 0, CoASource::RANK }, // Call Lightning (Rank 12)
     { 16, 80, 501449, 501448, 0, CoASource::RANK }, // Kiss of the Clouds (Rank 9)
     { 16, 80, 501432, 501431, 0, CoASource::RANK }, // Electrocute (Rank 13)
+    { 16, 80, 501458, 501455, 0, CoASource::BOOK_RANK }, // Aeroblast (Rank 10)
     { 16, 84, 501399, 501398, 0, CoASource::RANK }, // Call Lightning (Rank 13)
-    // class 17: CLASS 43, RANK 75, OFFER 5
+    // class 17: CLASS 43, RANK 75
     { 17, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 17, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 17, 1, 2764, 0, 0, CoASource::CLASS }, // Throw
@@ -955,7 +959,6 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 17, 16, 501512, 501511, 0, CoASource::RANK }, // Infernal Strike (Rank 3)
     { 17, 16, 802411, 801059, 0, CoASource::RANK }, // Flames of Xoroth (Rank 2)
     { 17, 18, 501500, 501499, 0, CoASource::RANK }, // Sever (Rank 3)
-    { 17, 18, 802582, 0, 0, CoASource::OFFER }, // Warbringer (Rank 2)
     { 17, 20, 707693, 0, 0, CoASource::CLASS }, // Mark of Blaumeux (Rank 1)
     { 17, 20, 803889, 0, 0, CoASource::CLASS }, // Hellrider
     { 17, 20, 804702, 0, 0, CoASource::CLASS }, // Dreadrider's Stomp
@@ -975,7 +978,6 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 17, 26, 501501, 501500, 0, CoASource::RANK }, // Sever (Rank 4)
     { 17, 28, 680940, 680939, 0, CoASource::RANK }, // Gore (Rank 3)
     { 17, 28, 806967, 806966, 0, CoASource::RANK }, // Hellmaw (Rank 3)
-    { 17, 28, 802583, 802582, 0, CoASource::OFFER }, // Warbringer (Rank 3)
     { 17, 30, 804773, 0, 0, CoASource::CLASS }, // Drag Through Hell
     { 17, 30, 707694, 707693, 0, CoASource::RANK }, // Mark of Blaumeux (Rank 2)
     { 17, 30, 503362, 503361, 0, CoASource::RANK }, // Chainwhip (Rank 3)
@@ -989,7 +991,6 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 17, 36, 501509, 501508, 0, CoASource::RANK }, // Meatsaw (Rank 3)
     { 17, 36, 680941, 680940, 0, CoASource::RANK }, // Gore (Rank 4)
     { 17, 36, 806968, 806967, 0, CoASource::RANK }, // Hellmaw (Rank 4)
-    { 17, 36, 802584, 802583, 0, CoASource::OFFER }, // Warbringer (Rank 4)
     { 17, 38, 803667, 0, 0, CoASource::CLASS }, // Mark of Rivendare (Rank 1)
     { 17, 38, 501489, 501488, 0, CoASource::RANK }, // Flesh Hook (Rank 3)
     { 17, 40, 804788, 0, 0, CoASource::CLASS }, // Hellfire Advance
@@ -1004,7 +1005,6 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 17, 44, 680942, 680941, 0, CoASource::RANK }, // Gore (Rank 5)
     { 17, 44, 560666, 560665, 0, CoASource::RANK }, // Seeking Flame (Rank 4)
     { 17, 44, 806969, 806968, 0, CoASource::RANK }, // Hellmaw (Rank 5)
-    { 17, 44, 802585, 802584, 0, CoASource::OFFER }, // Warbringer (Rank 5)
     { 17, 46, 804774, 0, 0, CoASource::CLASS }, // Dreadsteed Portal
     { 17, 48, 802421, 802420, 0, CoASource::RANK }, // Skulltaker (Rank 7)
     { 17, 48, 501510, 501509, 0, CoASource::RANK }, // Meatsaw (Rank 4)
@@ -1019,7 +1019,6 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 17, 52, 707344, 707343, 0, CoASource::RANK }, // Mark of Korth'azz (Rank 5)
     { 17, 52, 680943, 680942, 0, CoASource::RANK }, // Gore (Rank 6)
     { 17, 52, 806970, 806969, 0, CoASource::RANK }, // Hellmaw (Rank 6)
-    { 17, 52, 802586, 802585, 0, CoASource::OFFER }, // Warbringer (Rank 6)
     { 17, 54, 501490, 501489, 0, CoASource::RANK }, // Flesh Hook (Rank 4)
     { 17, 54, 803899, 802421, 0, CoASource::RANK }, // Skulltaker (Rank 8)
     { 17, 54, 803669, 803668, 0, CoASource::RANK }, // Mark of Rivendare (Rank 3)
@@ -1346,7 +1345,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 19, 70, 500759, 500758, 0, CoASource::RANK }, // Spiritual Ascension (Rank 4)
     { 19, 76, 567541, 567540, 0, CoASource::RANK }, // Condemn (Rank 10)
     { 19, 80, 500760, 500759, 0, CoASource::RANK }, // Spiritual Ascension (Rank 5)
-    // class 20: CLASS 38, RANK 180, TRAINER 2
+    // class 20: CLASS 39, RANK 180, TRAINER 3
     { 20, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 20, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 20, 1, 2764, 0, 0, CoASource::CLASS }, // Throw
@@ -1387,6 +1386,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 20, 18, 503476, 804197, 0, CoASource::RANK }, // Rotclaw (Rank 2)
     { 20, 18, 504093, 804726, 0, CoASource::RANK }, // Vampiric Fang (Rank 2)
     { 20, 20, 504897, 0, 0, CoASource::CLASS }, // Coagulated Shield
+    { 20, 20, 800175, 0, 0, CoASource::CLASS }, // Running Wild
     { 20, 20, 561027, 560315, 0, CoASource::RANK }, // Valanar's Vengeance (Rank 2)
     { 20, 20, 573356, 573299, 0, CoASource::RANK }, // Animated Blood (Rank 2)
     { 20, 20, 802569, 802568, 0, CoASource::RANK }, // Taldaram's Torment (Rank 3)
@@ -1562,12 +1562,13 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 20, 70, 572897, 572896, 0, CoASource::RANK }, // Heartbreak (Rank 7)
     { 20, 70, 803586, 803585, 0, CoASource::RANK }, // Vampyr Bite (Rank 7)
     { 20, 72, 504136, 504135, 0, CoASource::TRAINER }, // Crimson Tide (Rank 9)
+    { 20, 72, 707340, 572403, 0, CoASource::TRAINER }, // Sanguinary Offering (Rank 6)
     { 20, 76, 572898, 572897, 0, CoASource::RANK }, // Heartbreak (Rank 8)
     { 20, 76, 501669, 501668, 0, CoASource::RANK }, // Bloodthorns (Rank 9)
     { 20, 76, 503486, 503485, 0, CoASource::RANK }, // Rotclaw (Rank 12)
     { 20, 80, 803587, 803586, 0, CoASource::RANK }, // Vampyr Bite (Rank 8)
     { 20, 80, 501670, 501669, 0, CoASource::RANK }, // Bloodthorns (Rank 10)
-    // class 21: CLASS 39, RANK 126, OFFER 28, TRAINER 2
+    // class 21: CLASS 39, RANK 126, OFFER 28, TRAINER 2, BOOK_RANK 7
     { 21, 1, 75, 0, 0, CoASource::CLASS }, // Auto Shot
     { 21, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 21, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
@@ -1602,6 +1603,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 12, 804669, 0, 0, CoASource::CLASS }, // Sticky Fingers
     { 21, 14, 807820, 0, 0, CoASource::CLASS }, // Dust Toss
     { 21, 14, 501725, 501724, 0, CoASource::RANK }, // Wild Strike (Rank 3)
+    { 21, 14, 802810, 802808, 0, CoASource::BOOK_RANK }, // Rough Waterskin (Rank 2)
     { 21, 15, 800274, 0, 0, CoASource::OFFER }, // Knotted Cord
     { 21, 15, 804791, 0, 0, CoASource::OFFER }, // Cure Medium Leather
     { 21, 16, 500073, 0, 0, CoASource::CLASS }, // Serrated Shot (Rank 1)
@@ -1621,6 +1623,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 22, 501726, 501725, 0, CoASource::RANK }, // Wild Strike (Rank 4)
     { 21, 22, 503449, 804027, 0, CoASource::RANK }, // Snapseed (Rank 2)
     { 21, 22, 803866, 802809, 0, CoASource::OFFER }, // Skinner's Grip
+    { 21, 22, 802812, 802810, 0, CoASource::BOOK_RANK }, // Doublestitched Waterskin (Rank 3)
     { 21, 24, 557333, 0, 0, CoASource::CLASS }, // Bushwhack
     { 21, 24, 501704, 500073, 0, CoASource::RANK }, // Serrated Shot (Rank 2)
     { 21, 24, 572729, 572728, 0, CoASource::RANK }, // Quick Shot (Rank 4)
@@ -1647,6 +1650,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 30, 503450, 503449, 0, CoASource::RANK }, // Snapseed (Rank 3)
     { 21, 30, 803673, 0, 0, CoASource::OFFER }, // 2 Bushcraft Gliders (Rank 2)
     { 21, 30, 804792, 0, 0, CoASource::OFFER }, // Cure Heavy Leather
+    { 21, 30, 802813, 802812, 0, CoASource::BOOK_RANK }, // Hardened Waterskin (Rank 4)
     { 21, 32, 562301, 0, 0, CoASource::CLASS }, // Befriend Beast
     { 21, 32, 503100, 503099, 0, CoASource::RANK }, // Assault (Rank 3)
     { 21, 32, 806445, 806444, 0, CoASource::RANK }, // Woodland Arrow (Rank 3)
@@ -1671,6 +1675,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 38, 803322, 803321, 0, CoASource::RANK }, // Woodsman's Adaptation (Rank 4)
     { 21, 38, 503451, 503450, 0, CoASource::RANK }, // Snapseed (Rank 4)
     { 21, 38, 806446, 806445, 0, CoASource::RANK }, // Woodland Arrow (Rank 4)
+    { 21, 38, 802814, 802813, 0, CoASource::BOOK_RANK }, // Refined Waterskin (Rank 5)
     { 21, 40, 561315, 0, 0, CoASource::CLASS }, // Rusty Shiv
     { 21, 40, 523491, 523490, 0, CoASource::RANK }, // Footpad's Adaptation (Rank 3)
     { 21, 40, 706395, 706394, 0, CoASource::RANK }, // Battle Screech (Rank 3)
@@ -1690,6 +1695,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 44, 547203, 547202, 0, CoASource::RANK }, // Hunting Shot (Rank 3)
     { 21, 44, 803862, 803861, 0, CoASource::RANK }, // Ravage (Rank 5)
     { 21, 44, 806922, 806921, 0, CoASource::RANK }, // Emerald Arrow (Rank 3)
+    { 21, 44, 802815, 802814, 0, CoASource::BOOK_RANK }, // Expert Waterskin (Rank 6)
     { 21, 46, 681527, 0, 0, CoASource::CLASS }, // Wild Blessing (Rank 1)
     { 21, 46, 501707, 501706, 0, CoASource::RANK }, // Serrated Shot (Rank 5)
     { 21, 46, 561185, 561184, 0, CoASource::RANK }, // Quills (Rank 3)
@@ -1709,6 +1715,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 50, 807329, 807328, 0, CoASource::RANK }, // Toxic Dart (Rank 7)
     { 21, 50, 803675, 0, 0, CoASource::OFFER }, // 4 Bushcraft Gliders (Rank 4)
     { 21, 50, 804794, 0, 0, CoASource::OFFER }, // Cure Rugged Leather
+    { 21, 50, 802816, 802815, 0, CoASource::BOOK_RANK }, // Superior Waterskin (Rank 7)
     { 21, 52, 572112, 572111, 0, CoASource::RANK }, // Precision Shot (Rank 6)
     { 21, 52, 681538, 681527, 0, CoASource::RANK }, // Wild Blessing (Rank 2)
     { 21, 52, 802396, 802395, 0, CoASource::RANK }, // Hookshot (Rank 4)
@@ -1724,6 +1731,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 54, 806448, 806447, 0, CoASource::RANK }, // Woodland Arrow (Rank 6)
     { 21, 56, 706398, 706397, 0, CoASource::RANK }, // Battle Screech (Rank 6)
     { 21, 56, 503103, 503102, 0, CoASource::RANK }, // Assault (Rank 6)
+    { 21, 56, 802817, 802816, 0, CoASource::BOOK_RANK }, // Masterwork Waterskin (Rank 8)
     { 21, 58, 573246, 573245, 0, CoASource::RANK }, // Deadshot (Rank 5)
     { 21, 58, 681539, 681538, 0, CoASource::RANK }, // Wild Blessing (Rank 3)
     { 21, 58, 501721, 501720, 0, CoASource::RANK }, // Skullpiercer (Rank 8)
@@ -1763,7 +1771,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 21, 76, 547207, 547206, 0, CoASource::RANK }, // Hunting Shot (Rank 7)
     { 21, 80, 567236, 567235, 0, CoASource::RANK }, // Battle Screech (Rank 11)
     { 21, 80, 547208, 547207, 0, CoASource::RANK }, // Hunting Shot (Rank 8)
-    // class 22: CLASS 35, RANK 111
+    // class 22: CLASS 35, RANK 112
     { 22, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 22, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 22, 1, 5019, 0, 0, CoASource::CLASS }, // Shoot
@@ -1900,6 +1908,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 22, 60, 536263, 536262, 0, CoASource::RANK }, // Temporal Resilience (Rank 7)
     { 22, 60, 803578, 803577, 0, CoASource::RANK }, // Do Over (Rank 6)
     { 22, 60, 504575, 501784, 0, CoASource::RANK }, // Epoch (Rank 8)
+    { 22, 60, 567544, 567543, 0, CoASource::RANK }, // Chromatic Shard (Rank 9)
     { 22, 60, 572628, 501811, 0, CoASource::RANK }, // Reverse Wound (Rank 9)
     { 22, 60, 574345, 574344, 0, CoASource::RANK }, // Unmake (Rank 11)
     { 22, 60, 807949, 804495, 0, CoASource::RANK }, // Resynchronize (Rank 2)
@@ -3202,7 +3211,7 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 29, 80, 578343, 578342, 0, CoASource::RANK }, // Rotfang (Rank 9)
     { 29, 80, 807677, 807676, 0, CoASource::RANK }, // Spawn (Rank 5)
     { 29, 82, 503164, 503163, 0, CoASource::RANK }, // Venomtip Poison (Rank 10)
-    // class 30: CLASS 38, RANK 104
+    // class 30: CLASS 38, RANK 104, BOOK_RANK 5
     { 30, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 30, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 30, 1, 674, 0, 0, CoASource::CLASS }, // Dual Wield (Passive)
@@ -3343,7 +3352,12 @@ inline constexpr std::array<CoAClassSpell, 3642> ClassSpells =
     { 30, 60, 573053, 573052, 0, CoASource::RANK }, // Deathchaser (Rank 8)
     { 30, 60, 806844, 806843, 0, CoASource::RANK }, // Requiem (Rank 6)
     { 30, 60, 807721, 807720, 0, CoASource::RANK }, // Ghastly Screech (Rank 4)
+    { 30, 66, 502995, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 8)
+    { 30, 69, 502996, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 9)
     { 30, 70, 802427, 802426, 0, CoASource::RANK }, // Spectre Stride (Rank 7)
+    { 30, 72, 502997, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 10)
+    { 30, 75, 502998, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 11)
+    { 30, 78, 502999, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 12)
     { 30, 80, 802428, 802427, 0, CoASource::RANK }, // Spectre Stride (Rank 8)
     // class 31: CLASS 41, RANK 150
     { 31, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
