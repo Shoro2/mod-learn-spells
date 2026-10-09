@@ -4,6 +4,7 @@
 
 | Script | Hook | What |
 |---|---|---|
+| `LearnSpellsOnLevelUp` (PlayerScript) | `OnPlayerLogin` | a Witch Doctor (class 13) gets each of the Earth, Fire and Water Totem (5175-5177) it has neither in its bags nor in its bank (`HasItemCount(..., true)`, `AddItem`); with full bags a system line names the totem and the next login tries again. Its wards, effigies and idols carry a `TotemCategory` and fail with cast result 130 without one; no Witch Doctor spell asks for the Air Totem |
 | `LearnSpellsOnLevelUp` (PlayerScript) | `OnPlayerFirstLogin` | with `LearnSpells.OnFirstLogin = 1`: `LearnSpellsForNewLevel(player, 1)`. A Shaman (class 7) always gets the totems 5175-5178 (`AddItem`), whatever the key says; a CoA class with a shaman fallback gets none |
 | | `OnPlayerLevelChanged(player, oldLevel)` | with `LearnSpells.Enable` on, a level gain up to `LearnSpells.MaxLevel`: `LearnSpellsForNewLevel(player, oldLevel)`. A level loss teaches nothing |
 | `LearnSpellsCoAWorld` (WorldScript) | `OnStartup` | checks the CoA table against this server's spell store (see "Startup check") |

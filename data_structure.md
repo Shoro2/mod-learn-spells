@@ -7,7 +7,7 @@
 | `.github/ISSUE_TEMPLATE/` | upstream bug-report and feature-request forms |
 | `conf/mod_learnspells.conf.dist` | the four `LearnSpells.*` keys |
 | `src/LS_loader.cpp` | `Addmod_learn_spellsScripts()` -> `AddSC_LearnAllSpells()`, `AddSC_LearnSpellsCoA()` |
-| `src/mod_learnspells.cpp` | `LearnSpellsOnLevelUp`: the stock classes' spell-family sweep, the per-level extra spells, the ignore list, the Shaman totems; hands a CoA class to `LearnCoAClassSpells` |
+| `src/mod_learnspells.cpp` | `LearnSpellsOnLevelUp`: the stock classes' spell-family sweep, the per-level extra spells, the ignore list, the Shaman and Witch Doctor totems; hands a CoA class to `LearnCoAClassSpells` |
 | `src/LearnSpellsCoA.h` | the CoA API (`CoASource`, `CoAClassSpell`, `CoAClassSpells`, `IsCoAClassSpellAt`, `LearnCoAClassSpells`) that mod-ascension-compat includes |
 | `src/LearnSpellsCoA.cpp` | the API and the startup check `LearnSpellsCoAWorld` |
 | `src/LearnSpellsCoAData.h` | **generated** `LearnSpells::CoAData::ClassSpells`; its header names the CoA pin, the inputs and what was left out. Never edit by hand |

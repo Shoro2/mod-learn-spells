@@ -13,7 +13,7 @@ Full description: [.github/README.md](.github/README.md) (this repo keeps its RE
 | Scripts | `LearnSpellsOnLevelUp` (PlayerScript: first login, level change), `LearnSpellsCoAWorld` (WorldScript: startup check); loader `Addmod_learn_spellsScripts` |
 | Classes | stock 1-11 (spell-family sweep); CoA 12-32 (`IsAscensionClass`), rows in `src/LearnSpellsCoAData.h` |
 | API for mod-ascension-compat | `src/LearnSpellsCoA.h`, namespace `LearnSpells`: `LearnCoAClassSpells`, `IsCoAClassSpellAt`, `CoAClassSpells` |
-| Starting totems | items 5175-5178 to a Shaman (class 7) on first login |
+| Starting totems | items 5175-5178 to a Shaman (class 7) on first login; the Earth, Fire and Water Totem (5175-5177) to a Witch Doctor (class 13) at every login, each one it has neither in its bags nor in its bank (operator 2026-10-10) |
 | Characters SQL | `2026_09_27_02_learnspells_stock_class_coa_spells_out.sql`: CoA spells 800292, 984202, 583092, 760121, 800911, 804662, 1200006, 1200011, 1200012, 92263 (auras also 92261, 92262) out of classes 1-11 |
 | Tables | none of its own; teaches through the core (`character_spell`); the SQL above deletes from `character_spell`, `character_action`, `character_aura`, `character_spell_cooldown` |
 | Config | `LearnSpells.Enable`, `LearnSpells.OnFirstLogin`, `LearnSpells.MaxLevel`; `LearnSpells.Announce` exists but nothing reads it |
@@ -44,8 +44,10 @@ Full description: [.github/README.md](.github/README.md) (this repo keeps its RE
    through the reserved MIG-105..110 in HOST11 (vault `cu4-plan-report-20261009.md` §4.6/§6.2, FL/15 §4).
 2. Felsworn capital rifts are not faction-gated (queue): needs CoA's race-masked `SkillLineAbility` rows 23482-23487
    on server and client, or a race mask in this table; round 4 gates only Theramore and Stonard.
-3. Shieldgore character cleanup (queue proposal, the operator decides) and the starting totems of the four
-   shaman-fallback classes 13, 16, 29, 32 (queue design decision; `OnPlayerFirstLogin` tests the real class).
+3. Shieldgore character cleanup (queue proposal, the operator decides).
+4. Witch Doctor totems at login (operator 2026-10-10, "ja"): built and bot-tested (mod-woodworking
+   `tests/coa_witchdoctor_totems.tbs`) after HOST11, then on `main`; host through MIG-117. The other
+   shaman-fallback classes (16, 29, 32) learn no spell that needs a totem.
 4. Every later CoA pin: regenerate; the generator refuses when a copied rule changed (re-check, record the new
    fingerprint). New CoA bugs are only noted in the queue; fixes come from CoA upstream through pin rounds
    (operator 2026-10-08).

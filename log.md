@@ -1,5 +1,10 @@
 # Log (newest first)
 
+- 2026-10-10 — feat: a Witch Doctor gets the Earth, Fire and Water Totem at every login it lacks one
+  (`OnPlayerLogin`; operator 2026-10-10 "ja", thread "Hexing Effigy"). Its ten wards, effigies and idols carry a
+  `TotemCategory` (Fire 4, Earth 2, Water 5) and failed with cast result 130 for every Witch Doctor, since only a
+  Shaman got totems (first login). Existing characters included; bags and bank count (this commit)
+
 - 2026-10-09 — CoA catch-up round 4 (CU4-WP6) on branch `claude/coa-round4-ad93e862`, not yet on `main`. Built and
   installed by the round's install step together with mod-ascension-compat `claude/coa-round4-ad93e862`
   (`c18ae4e74c48`), which includes `LearnSpellsCoA.h`.

@@ -3,6 +3,7 @@
 #include "DBCStores.h"       // GetSkillRaceClassInfo / SkillLineAbilityEntry
 #include "DisableMgr.h"
 #include "LearnSpellsCoA.h"
+#include "ObjectMgr.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "SharedDefines.h"   // IsAscensionClass / the Classes enum
@@ -14,6 +15,7 @@ class LearnSpellsOnLevelUp : public PlayerScript
 public:
     LearnSpellsOnLevelUp() : PlayerScript("LearnSpellsOnLevelUp", {
         PLAYERHOOK_ON_FIRST_LOGIN,
+        PLAYERHOOK_ON_LOGIN,
         PLAYERHOOK_ON_LEVEL_CHANGED
     }) { }
 
@@ -28,6 +30,29 @@ public:
             player->AddItem(5176, 1); // Fire Totem
             player->AddItem(5177, 1); // Water Totem
             player->AddItem(5178, 1); // Air Totem
+        }
+    }
+
+    // The Witch Doctor's wards, effigies and idols need a shaman totem (TotemCategory: Fire 4, Earth 2, Water 5;
+    // cast result 130 without it) and nothing else hands one out, so every login gives a Witch Doctor the ones it
+    // has neither in its bags nor in its bank - new and existing characters alike (operator 2026-10-10). No Witch
+    // Doctor spell asks for the Air Totem; the other shaman-fallback classes (16, 29, 32) need none.
+    void OnPlayerLogin(Player* player) override
+    {
+        if (player->getClass() != CLASS_WITCH_DOCTOR)
+            return;
+
+        for (uint32 totem : { 5175u, 5176u, 5177u }) // Earth, Fire, Water Totem
+        {
+            if (player->HasItemCount(totem, 1, true))
+                continue;
+
+            ItemPosCountVec dest;
+            if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, totem, 1) == EQUIP_ERR_OK)
+                player->AddItem(totem, 1);
+            else if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(totem))
+                ChatHandler(player->GetSession()).PSendSysMessage(
+                    "Your bags are full: free a slot and log in again to receive your {}.", proto->Name1);
         }
     }
 
