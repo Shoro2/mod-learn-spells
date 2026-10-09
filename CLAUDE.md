@@ -45,9 +45,10 @@ Full description: [.github/README.md](.github/README.md) (this repo keeps its RE
 2. Felsworn capital rifts are not faction-gated (queue): needs CoA's race-masked `SkillLineAbility` rows 23482-23487
    on server and client, or a race mask in this table; round 4 gates only Theramore and Stonard.
 3. Shieldgore character cleanup (queue proposal, the operator decides).
-4. Witch Doctor totems at login (operator 2026-10-10, "ja"): built and bot-tested (mod-woodworking
-   `tests/coa_witchdoctor_totems.tbs`) after HOST11, then on `main`; host through MIG-117. The other
-   shaman-fallback classes (16, 29, 32) learn no spell that needs a totem.
+4. Witch Doctor totems at login (operator 2026-10-10, "ja"; "mit HOST11"): T1 on the workbench 2026-10-10 (boot
+   00:39, Errors log = the 87 baseline lines; bot run 582 `coa_witchdoctor_totems` PASS 18/0), host through MIG-117
+   in HOST11; the operator's T2 owed. The other shaman-fallback classes (16, 29, 32) learn no spell that needs a
+   totem.
 4. Every later CoA pin: regenerate; the generator refuses when a copied rule changed (re-check, record the new
    fingerprint). New CoA bugs are only noted in the queue; fixes come from CoA upstream through pin rounds
    (operator 2026-10-08).

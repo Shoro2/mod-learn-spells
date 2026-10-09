@@ -7,8 +7,8 @@
   `SkillLineAbility` rows 23482-23487 on server and client, or a race mask in this table.
 - (low) Knight of Xoroth Shieldgore cleanup: characters that learned ranks 806869-806874 before round 3 keep them; the
   cleanup SQL is a proposal (`F:\wowstuff\coa-program\cu3\wp6\proposal\`), the operator decides (queue).
-- (high) Witch Doctor totems at login (operator 2026-10-10): build, boot and the bot run
-  `coa_witchdoctor_totems` (mod-woodworking `tests/`) once HOST11 is done, then merge to `main`; host MIG-117.
+- (medium) Witch Doctor totems at login: T1 done (bot run 582); host MIG-117 rides HOST11; T2 owed (a Witch Doctor
+  logs in on the host and finds the Earth, Fire and Water Totem in its bags).
 - (low) `LearnSpells.Announce` is in the conf but no code reads it: implement the announce or drop the key.
 - (low) `.github/workflows/core-build.yml` runs on pushes to `master`; this repo's branch is `main`, so a push never
   triggers it.
