@@ -33,7 +33,7 @@ and `SkillRaceClassInfo` (DBC), `disables`.
 | `Level` | the level CoA's class trainer sells the spell at |
 | `SpellId` | the spell taught |
 | `RequiredSpellId` | the rank beneath that the character must hold; 0 = none |
-| `RaceMask` | races allowed (mod-ascension-compat's racial rule, replayed by the generator); 0 = every race |
+| `RaceMask` | races allowed (mod-ascension-compat's racial rule, replayed by the generator, multi-race masks widened to Goblin/Worgen by their donor Orc/Human); 0 = every race |
 | `Source` | `CLASS` (CoA's ClassSpells and the Felsworn's Horde-capital rifts), `RANK`, `RANK_ROOT`, `OFFER`, `TRAINER`, `BOOK_RANK` |
 
 Rows of a class are in learning order: a row's requirement, when it is a row of the class, comes first.

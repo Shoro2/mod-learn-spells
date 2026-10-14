@@ -493,14 +493,14 @@ inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
     { 14, 38, 706417, 706416, 0, CoASource::RANK }, // Bane of Chaos (Rank 4)
     { 14, 38, 803883, 803882, 0, CoASource::RANK }, // Vengeful Pact (Rank 4)
     { 14, 38, 501272, 501271, 0, CoASource::RANK }, // Immolation Aura (Rank 4)
-    { 14, 40, 535601, 0, 1101, CoASource::CLASS }, // Fel Rift: Theramore
+    { 14, 40, 535601, 0, 3149, CoASource::CLASS }, // Fel Rift: Theramore
     { 14, 40, 802075, 0, 0, CoASource::CLASS }, // Blood of Mannoroth
     { 14, 40, 520690, 520689, 0, CoASource::RANK }, // Felwrath (Rank 4)
     { 14, 40, 523481, 523480, 0, CoASource::RANK }, // Man'ari Intuition (Rank 4)
     { 14, 40, 707525, 707524, 0, CoASource::RANK }, // Hateforged Barrier (Rank 4)
     { 14, 40, 802407, 802406, 0, CoASource::RANK }, // Felrend (Rank 4)
     { 14, 40, 560762, 560761, 0, CoASource::RANK }, // Annihilan Strike (Rank 5)
-    { 14, 40, 535602, 0, 690, CoASource::OFFER }, // Fel Rift: Stonard
+    { 14, 40, 535602, 0, 946, CoASource::OFFER }, // Fel Rift: Stonard
     { 14, 42, 501327, 501326, 0, CoASource::RANK }, // Illidari Intuition (Rank 3)
     { 14, 42, 501295, 501294, 0, CoASource::RANK }, // Ruin (Rank 5)
     { 14, 42, 501318, 501317, 0, CoASource::RANK }, // Sargeron Smite (Rank 6)

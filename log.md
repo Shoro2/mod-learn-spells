@@ -1,5 +1,13 @@
 # Log (newest first)
 
+- 2026-10-14 — feat(tools): `build_coa_class_spells.py` knows Forgotten Land's Goblin (9) and Worgen (12) (WP-D of
+  `forgotten-land/server/24-worgen-goblin-races.md`, branch `claude/worgoblin-cd9f5812`). A multi-race `RaceMask` that
+  holds the donor race (Orc 2 -> Goblin 256, Human 1 -> Worgen 2048) now also holds the new race (`widen_race_mask`);
+  race 0 and single-race masks (racials) are untouched. `src/LearnSpellsCoAData.h` regenerated from the same inputs as
+  the last regeneration (CoA `fc359be9bf79`, mod-ascension-compat main `295ecd2`, dcore DBCs, VanityCollection, 5,905
+  `spell_dbc` ids; the unchanged generator reproduced the committed file byte for byte first): the only changes are
+  two entries, Fel Rift: Theramore 535601 (1101 -> 3149) and Fel Rift: Stonard 535602 (690 -> 946). Not built.
+
 - 2026-10-10 — feat: a Witch Doctor gets the Earth, Fire and Water Totem at every login it lacks one
   (`OnPlayerLogin`; operator 2026-10-10 "ja", thread "Hexing Effigy"). Its ten wards, effigies and idols carry a
   `TotemCategory` (Fire 4, Earth 2, Water 5) and failed with cast result 130 for every Witch Doctor, since only a

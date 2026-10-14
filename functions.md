@@ -72,7 +72,9 @@ build_coa_class_spells.py --coa-clone DIR --pin SHA --compat DIR --dbc-dir DIR -
 - Left out: talent-tree spells, Character Advancement entries, TalentReplacements ranks/targets, TaughtAbilities, class
   script replacement targets (mod-ascension-compat's `check_replacement_learns.py --targets`), Ascension vanity items
   (`VanityCollection.dbc`), deprecated spells, and the Book of Artisans (trainer 200001, profession recipes).
-- `RaceMask` replays mod-ascension-compat's `CanGrantAscensionRacialSpell` for the playable races. Every copied
+- `RaceMask` replays mod-ascension-compat's `CanGrantAscensionRacialSpell` for the ten playable races, then applies
+  Forgotten Land's donor rule for the races it adds (`FL_RACE_DONORS`: Goblin 9 <- Orc, Worgen 12 <- Human): a
+  multi-race mask that holds the donor's bit also holds the new race's (256 / 2048); 0 and single-race masks stay. Every copied
   function is pinned in `REPLAYED_RULES` by the SHA-256 of its text without comments and whitespace; the generator
   refuses to run when one changed. Re-check the copy against the module's new code, then record the printed
   fingerprint.

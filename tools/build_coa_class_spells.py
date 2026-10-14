@@ -23,7 +23,9 @@ whose name marks it deprecated is left out too. Nothing of the Book of Artisans 
 it teaches is a profession recipe. A CoA row whose spell the server's Spell.dbc does not carry is no row (the
 evidence JSON lists them as not_in_store): it becomes one when a spell package brings the spell.
 
-RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race). The
+RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race); a
+multi-race mask that holds Orc (2) or Human (1) also gets Goblin (256) or Worgen (2048) - Forgotten Land's donor rule
+for the races it adds (FL_RACE_DONORS), which the module's own data does not know. The
 replay reads the rule's data from the module's source - the racial skill lines (AscensionRacialAbilities::Skills),
 the class variants outside the DBC masks (ClassVariantsOutsideDbcMask, CoA c9389794) and the Felsworn rifts the
 faction rule gates by race (AscensionFelsworn::CanLearnRift, CoA cf6b1797) - with the enum names resolved through
@@ -52,6 +54,10 @@ import sys
 
 COA_CLASSES = range(12, 33)
 PLAYABLE_RACES = (1, 2, 3, 4, 5, 6, 7, 8, 10, 11)
+# The races Forgotten Land adds to CoA's ten (mod-worgoblin, plan FL/24 rule 1): race -> donor race. The racial rule
+# is replayed for PLAYABLE_RACES only - the module's data names no racial line of a new race - and the result is then
+# widened by the donor rule (widen_race_mask).
+FL_RACE_DONORS = {9: 2, 12: 1}                  # Goblin <- Orc, Worgen <- Human
 SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN = 2   # DBCEnums.h
 SOURCES = ("CLASS", "RANK", "RANK_ROOT", "OFFER", "TRAINER", "BOOK_RANK")
 ITEM_EFFECTS = (24, 157, 34, 66)
@@ -298,6 +304,17 @@ def deprecated(text):
     return False
 
 
+def widen_race_mask(mask):
+    """The donor rule: a MULTI-race mask that holds a donor race's bit also holds the new race's bit. Race 0 (every
+    race, the whole of PLAYABLE_RACES) and a single-race mask (a racial stays with its race) are left as they are."""
+    if not mask or not mask & (mask - 1):
+        return mask
+    for new, donor in FL_RACE_DONORS.items():
+        if mask & (1 << (donor - 1)):
+            mask |= 1 << (new - 1)
+    return mask
+
+
 class Racial(object):
     """CanLearn / IsSupersededRacialCopy / CanGrantAscensionRacialSpell (with AscensionFelsworn::CanLearnRift) /
     GetAscensionRacialSpells of mod-ascension-compat, offline (REPLAYED_RULES). skills and rifts are the module's
@@ -350,7 +367,7 @@ class Racial(object):
         allowed = [r for r in PLAYABLE_RACES if self.can_grant(r, cls, sid)]
         if len(allowed) == len(PLAYABLE_RACES):
             return 0
-        return sum(1 << (r - 1) for r in allowed)
+        return widen_race_mask(sum(1 << (r - 1) for r in allowed))
 
     def racials(self, race, cls):
         """What the module offers the character from its racial lines (CanLearn), what T2 takes away as a same-name
