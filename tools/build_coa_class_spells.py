@@ -72,6 +72,8 @@ FELSWORN_SOURCE = "src/AscensionFelsworn.cpp"
 # eight rifts instead of six (Theramore 535601 and Stonard 535602 join the six capitals). LoadCoATalentData now also
 # keeps a paid entry's prerequisites and two flags (CoA b8b7252c / d60f0243); the catalog of spells it builds, which
 # catalog_spells copies, is unchanged.
+# Re-checked against mod-ascension-compat 6caae328eaa3 (CoA 4670ac251d86 merged, round 5): all nine fingerprints hold
+# (the merge cut CoA cd0f9b9b's spec-loot lines, the only change that would have moved LoadCoATalentData).
 REPLAYED_RULES = (
     (RACIAL_HEADER, "GetRace",
      "6bb00b110a7d71c3599d0476c566ae069f81ceabcf0bb3d5872f859fc91afd38", "Racial.race_of"),

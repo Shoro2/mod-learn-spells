@@ -39,9 +39,11 @@ Full description: [.github/README.md](.github/README.md) (this repo keeps its RE
 
 ## Next steps
 
-1. CoA catch-up round 4 (running, thread "CoA-Fork syncen"): WP-6 re-checked the two refused rule copies and
-   regenerated the table on branch `claude/coa-round4-ad93e862`, not on `main` yet; merge after the round's T1, host
-   through the reserved MIG-105..110 in HOST11 (vault `cu4-plan-report-20261009.md` §4.6/§6.2, FL/15 §4).
+1. CoA catch-up round 5 (2026-10-15, CoA `4670ac251d86`; branch `claude/coa-round5-f111171c`, not on `main` yet): all
+   nine pinned rules hold on the merged class module `6caae328`; the regenerated table has the same 3,656 rows (the
+   round's two new taught abilities, Saber Slash (Fire) 680230 and Branded 707717, are not trainer rows); new in the
+   code: no Explode rank is taught while a Pyromancer holds Echo of Nozdormu (`LearnSpellsCoARules.h`, CoA
+   `c0eec7b9`). Merge after the round's T1 (build, boot, startup line `3656 ... 7 problem(s)`, errors baseline).
 2. Felsworn capital rifts are not faction-gated (queue): needs CoA's race-masked `SkillLineAbility` rows 23482-23487
    on server and client, or a race mask in this table; round 4 gates only Theramore and Stonard.
 3. Shieldgore character cleanup (queue proposal, the operator decides).

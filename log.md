@@ -1,5 +1,23 @@
 # Log (newest first)
 
+- 2026-10-15 - CoA catch-up round 5 (CU5-WP6) on branch `claude/coa-round5-f111171c` (off `main` `1d426cf`), not yet
+  on `main`. Built and installed by the round's install step together with mod-ascension-compat
+  `claude/coa-round5-f111171c` (`6caae328`); nothing was built here (a syntax-only `cl /Zs` of `LearnSpellsCoA.cpp`
+  against the integration build's include paths passes).
+  - `src/LearnSpellsCoAData.h` regenerated at CoA `4670ac251d86` (the generator is unchanged): the same 3,656 rows,
+    nothing added, removed or changed, only the `Source:` pin line differs. All nine `REPLAYED_RULES` fingerprints hold
+    on `6caae328` (the merge cut `cd0f9b9b`'s spec-loot lines, the only change that would have moved
+    `LoadCoATalentData`). The round's two new TaughtAbilities rows - Witch Hunter Saber Slash (Fire) 680230 at 10 (CoA
+    `0a34af87`) and Runemaster Branded 707717 at 50 (`f1742262`) - are not trainer rows (Branded is also a tree spell),
+    so no row moves; the output is the same with dcore's `Spell.dbc` and with CU5-WP2's staged one (+7 rows).
+  - New rule (CoA `c0eec7b9`, #7120): while a Pyromancer holds Echo of Nozdormu (aura 520937), which replaces Explode
+    (800792) in the book and on the bars, `LearnCoAClassSpells` teaches no Explode rank 2-9 (502057-502063, 570750). The
+    core hands a live replacement on to a new rank server-side, but `learnSpell` still announces the rank to a client
+    that lists Echo in that slot, and CoA treats ranks the player never casts as a defect; the rule is upstream's,
+    ported as `IsExplodeRankHeldBack` in the new `src/LearnSpellsCoARules.h`. The ranks follow with the next pass once
+    the aura is gone (a talent change calls the pass right after removing the talent's spells). Proof offline:
+    `tools/test_echo_exclusion.cpp` (10 checks against the real rows, stub `Define.h`), and the rule selects exactly
+    CoA's eight Ranks rows with FirstSpellId 800792 and the core's `spell_ranks` chain. Not run in game (todo).
 - 2026-10-14 — feat(tools): `build_coa_class_spells.py` knows Forgotten Land's Goblin (9) and Worgen (12) (WP-D of
   `forgotten-land/server/24-worgen-goblin-races.md`, branch `claude/worgoblin-cd9f5812`). A multi-race `RaceMask` that
   holds the donor race (Orc 2 -> Goblin 256, Human 1 -> Worgen 2048) now also holds the new race (`widen_race_mask`);

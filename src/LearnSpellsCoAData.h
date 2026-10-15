@@ -6,7 +6,7 @@
 // stock classes their spells, and mod-ascension-compat asks it to again after a talent or specialization
 // change, at character creation and on an explicit repair.
 //
-// Source: Chapters of Azeroth fc359be9bf79ffb532c192d7afe754be21feba40
+// Source: Chapters of Azeroth 4670ac251d863e999e952cf53dd43e496cb340ba
 //   src/server/coa/AscensionCustomClassData.h       ClassSpells                   -> Source CLASS
 //   src/server/coa/AscensionCompat.cpp              FelswornHordeCapitalRifts     -> Source CLASS
 //   src/server/coa/AscensionSpellProgressionData.h  Ranks (rank ladders)          -> Source RANK, RANK_ROOT
