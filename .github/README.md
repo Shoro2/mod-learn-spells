@@ -40,7 +40,8 @@ mod-ascension-compat's reconcile, as CoA does.
 - `src/LearnSpellsCoA.h` is the entry point mod-ascension-compat calls (`LearnCoAClassSpells`, `IsCoAClassSpellAt`,
   `CoAClassSpells`): that module keeps the CoA talent system and teaches nothing by level itself; where it takes
   spells away and gives them back (a specialization switch, a talent change, character creation, an explicit repair)
-  it asks this module to put the level spells back.
+  it asks this module to put the level spells back. One rule sits on top of the rows (`src/LearnSpellsCoARules.h`,
+  CoA `c0eec7b9`): while a Pyromancer holds Echo of Nozdormu, which replaces Explode, no Explode rank is taught.
 - `tools/build_coa_class_spells.py` regenerates the table from a CoA clone at the pinned commit, mod-ascension-compat's
   data and the server DBCs (usage in the file). Re-run it when the CoA pin, the class data or the spell package
   changes; mod-ascension-compat's `tools/build_class_spellbook_bindings.py` reads the same table. The race masks

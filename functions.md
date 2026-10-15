@@ -47,6 +47,14 @@ every character as a broken spell) and a disabled one. In the world it uses `lea
 created (not in the world yet) `addSpell(spell, SPEC_MASK_ALL, true)`, which the login's initial spell list then
 carries. One pass learns a whole rank ladder because the rows are in learning order.
 
+One rule sits on top of the rows (`src/LearnSpellsCoARules.h`, CoA `c0eec7b9`): while a Pyromancer holds Echo of
+Nozdormu (aura 520937), which replaces Explode (800792) with an Echo rank in the book and on the bars, the pass teaches
+no Explode rank 2-9 (`IsExplodeRankHeldBack` / `IsRankAbove`: a row whose `RequiredSpellId` chain, through the class's
+own rows, leads back to 800792; Explode itself is a `CLASS` row and stays). The ranks follow with the next pass once
+the aura is gone - a talent change calls `LearnCoAClassSpells` right after it removes the talent's spells.
+`tools/test_echo_exclusion.cpp` compiles the rule against the real rows with a stub `Define.h` (build line in its
+header) and checks it.
+
 Callers in mod-ascension-compat (`AscensionCompat.cpp`): `RestoreLevelSpells` after a talent or specialization
 change, at character creation and on the GM repair `.localclassrepair`; its reconcile reads `CoAClassSpells` /
 `IsCoAClassSpellAt` to take `CLASS` rows back below their level. A level-up does not go through that module, and the

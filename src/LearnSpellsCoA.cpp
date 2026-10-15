@@ -3,6 +3,7 @@
  */
 #include "LearnSpellsCoA.h"
 #include "LearnSpellsCoAData.h"
+#include "LearnSpellsCoARules.h"
 
 #include "Config.h"
 #include "DisableMgr.h"
@@ -76,12 +77,16 @@ uint32 LearnCoAClassSpells(Player* player)
 
     uint8 const level = player->GetLevel();
     uint32 learned = 0;
+    auto const rows = CoAClassSpells(player->getClass());
+    // CoA c0eec7b9: while Echo of Nozdormu replaces Explode, no Explode rank is taught (LearnSpellsCoARules.h).
+    bool const echo = player->getClass() == CLASS_PYROMANCER && player->HasAura(PyromancerEchoOfNozdormu);
     // Rows come in learning order, so a ladder is learned bottom-up in this one pass: a rank's requirement, when it
     // is a row of the class, was learned just before it.
-    for (CoAClassSpell const& row : CoAClassSpells(player->getClass()))
+    for (CoAClassSpell const& row : rows)
     {
         if (row.Level > level || !FitsRace(row, player) || player->HasSpell(row.SpellId) ||
-            (row.RequiredSpellId && !player->HasSpell(row.RequiredSpellId)))
+            (row.RequiredSpellId && !player->HasSpell(row.RequiredSpellId)) ||
+            IsExplodeRankHeldBack(rows, row, echo))
             continue;
 
         // A spell the store cannot validate would be refused as a "Broken spell" and deleted from every character

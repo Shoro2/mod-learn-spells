@@ -10,8 +10,10 @@
 | `src/mod_learnspells.cpp` | `LearnSpellsOnLevelUp`: the stock classes' spell-family sweep, the per-level extra spells, the ignore list, the Shaman and Witch Doctor totems; hands a CoA class to `LearnCoAClassSpells` |
 | `src/LearnSpellsCoA.h` | the CoA API (`CoASource`, `CoAClassSpell`, `CoAClassSpells`, `IsCoAClassSpellAt`, `LearnCoAClassSpells`) that mod-ascension-compat includes |
 | `src/LearnSpellsCoA.cpp` | the API and the startup check `LearnSpellsCoAWorld` |
+| `src/LearnSpellsCoARules.h` | `IsRankAbove`, `IsExplodeRankHeldBack`, `PyromancerExplode`, `PyromancerEchoOfNozdormu`: the Explode / Echo of Nozdormu rule (CoA `c0eec7b9`), free of core headers |
 | `src/LearnSpellsCoAData.h` | **generated** `LearnSpells::CoAData::ClassSpells`; its header names the CoA pin, the inputs and what was left out. Never edit by hand |
 | `tools/build_coa_class_spells.py` | the generator of `LearnSpellsCoAData.h` |
+| `tools/test_echo_exclusion.cpp`, `tools/test_stub/Define.h` | standalone check of the Explode / Echo rule against the generated rows (MSVC line in the file header); the stub stands in for the core's `Define.h` |
 | `data/sql/db-characters/2026_09_27_02_learnspells_stock_class_coa_spells_out.sql` | OI-10 cleanup: ten CoA spells (spell rows, action buttons, self-cast auras, cooldowns) out of characters of classes 1-11; idempotent |
 | `include.sh` | empty (module convention) |
 | `LICENSE.md` | AGPL v3 |
