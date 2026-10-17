@@ -1,10 +1,16 @@
 # mod-learn-spells
 
+> **Internal docs live in the vault, not here** (rule since 2026-10-18: this public repo keeps only
+> README.md with the general info and installation, this CLAUDE.md, the license and the code).
+> Index, data structure, functions, log and todo: share-public `docs/World of Warcraft/module-repos/mod-learn-spells/`
+> (local checkout `C:\Users\Anwender\Documents\GitHub\share-public`). Update them there,
+> in a vault worktree, in the same session as the code change.
+
 Teaches spells on level-up, so no class trainer is needed. The stock classes learn the trainer spells of their
 spell family at the level they reach; the 21 Conquest of Azeroth (CoA) classes (ids 12-32) learn what CoA's own class
 trainer would sell them, from a generated table. FL's copy of AzerothCore's module, and since 2026-09-27 the only
 place the CoA classes' level spells come from (operator: "das soll alles über das autolearn modul laufen").
-Full description: [.github/README.md](.github/README.md) (this repo keeps its README under `.github/`).
+Full description: [README.md](README.md) (moved from `.github/` to the root on 2026-10-18).
 
 ## Ids and tables
 
@@ -55,7 +61,7 @@ Full description: [.github/README.md](.github/README.md) (this repo keeps its RE
    fingerprint). New CoA bugs are only noted in the queue; fixes come from CoA upstream through pin rounds
    (operator 2026-10-08).
 
-Open points in full: [todo.md](todo.md).
+Open points in full: [todo.md](https://github.com/Shoro2/share-public/blob/main/docs/World%20of%20Warcraft/module-repos/mod-learn-spells/todo.md).
 
 ## Working here
 
@@ -73,4 +79,5 @@ Open points in full: [todo.md](todo.md).
 - Vault (`share-public/docs/World of Warcraft/`): `12-server-todo.md`, `coa-classes/00-INDEX.md`,
   `coa-classes/05-program-21-classes-on-dcore.md`, `coa-classes/08-upstream-sync-20261009.md`,
   `coa-classes/program-records/oi9-report.md`, `oi10-report.md`, `cu3-wp6-report.md`, `cu4-plan-report-20261009.md`.
-- Doc set: INDEX.md, CLAUDE.md, data_structure.md, functions.md, log.md (newest first), todo.md.
+- Doc set: this CLAUDE.md; INDEX, data_structure, functions, log (newest first) and todo in share-public
+  `docs/World of Warcraft/module-repos/mod-learn-spells/`.
