@@ -6,7 +6,7 @@
 // stock classes their spells, and mod-ascension-compat asks it to again after a talent or specialization
 // change, at character creation and on an explicit repair.
 //
-// Source: Chapters of Azeroth 4670ac251d863e999e952cf53dd43e496cb340ba
+// Source: Chapters of Azeroth 29f4e9fe1176b59ee5e63d2316641c7f56e07511
 //   src/server/coa/AscensionCustomClassData.h       ClassSpells                   -> Source CLASS
 //   src/server/coa/AscensionCompat.cpp              FelswornHordeCapitalRifts     -> Source CLASS
 //   src/server/coa/AscensionSpellProgressionData.h  Ranks (rank ladders)          -> Source RANK, RANK_ROOT
@@ -19,7 +19,7 @@
 // spell a class script makes a replacement target (mod-ascension-compat's check_replacement_learns); also a
 // spell that creates an Ascension vanity item (VanityCollection.dbc, 10764 items) or a deprecated one. The Book of
 // Artisans (trainer 200001) is never read: a spell only it teaches is a profession recipe.
-// 3656 rows, 56 left out.
+// 3659 rows, 56 left out.
 //
 // RequiredSpellId: the rank beneath, which the character must hold (0 = none). RaceMask: the races
 // mod-ascension-compat's CanGrantAscensionRacialSpell allows (0 = every race). Rows of a class are in
@@ -34,7 +34,7 @@
 
 namespace LearnSpells::CoAData
 {
-inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
+inline constexpr std::array<CoAClassSpell, 3659> ClassSpells =
 {{
     // class 12: CLASS 29, RANK 151, TRAINER 1
     { 12, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
@@ -2604,10 +2604,11 @@ inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
     { 26, 76, 502294, 502293, 0, CoASource::RANK }, // Celestial Strike (Rank 10)
     { 26, 80, 803637, 803636, 0, CoASource::RANK }, // Tidal Rebirth (Rank 5)
     { 26, 80, 803619, 803618, 0, CoASource::RANK }, // Celestial Awakening (Rank 8)
-    // class 27: CLASS 40, RANK 152, OFFER 2, TRAINER 2
+    // class 27: CLASS 41, RANK 152, OFFER 2, TRAINER 2
     { 27, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 27, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 27, 1, 3018, 0, 0, CoASource::CLASS }, // Shoot
+    { 27, 1, 3124, 0, 0, CoASource::CLASS }, // Parry
     { 27, 1, 5019, 0, 0, CoASource::CLASS }, // Shoot
     { 27, 1, 6603, 0, 0, CoASource::CLASS }, // Auto Attack
     { 27, 1, 500143, 0, 0, CoASource::CLASS }, // Illumination (Rank 1)
@@ -3359,7 +3360,7 @@ inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
     { 30, 75, 502998, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 11)
     { 30, 78, 502999, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 12)
     { 30, 80, 802428, 802427, 0, CoASource::RANK }, // Spectre Stride (Rank 8)
-    // class 31: CLASS 41, RANK 150
+    // class 31: CLASS 41, RANK 150, BOOK_RANK 2
     { 31, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 31, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 31, 1, 674, 0, 0, CoASource::CLASS }, // Dual Wield (Passive)
@@ -3542,11 +3543,13 @@ inline constexpr std::array<CoAClassSpell, 3656> ClassSpells =
     { 31, 60, 807334, 807333, 0, CoASource::RANK }, // Flourishing Growth (Rank 5)
     { 31, 62, 301276, 300693, 0, CoASource::RANK }, // Seismic Smash (Rank 2)
     { 31, 65, 807335, 807334, 0, CoASource::RANK }, // Flourishing Growth (Rank 6)
+    { 31, 66, 503265, 503264, 0, CoASource::BOOK_RANK }, // Seismic Crash (Rank 9)
     { 31, 68, 301277, 301276, 0, CoASource::RANK }, // Seismic Smash (Rank 3)
     { 31, 68, 502777, 502776, 0, CoASource::RANK }, // Geode Barrage (Rank 10)
     { 31, 68, 502733, 502732, 0, CoASource::RANK }, // Primal Shred (Rank 10)
     { 31, 70, 803611, 803610, 0, CoASource::RANK }, // Return to Life (Rank 7)
     { 31, 70, 807562, 807335, 0, CoASource::RANK }, // Flourishing Growth (Rank 7)
+    { 31, 73, 503266, 503264, 0, CoASource::BOOK_RANK }, // Seismic Crash (Rank 10)
     { 31, 74, 301278, 301277, 0, CoASource::RANK }, // Seismic Smash (Rank 4)
     { 31, 75, 575028, 807562, 0, CoASource::RANK }, // Flourishing Growth (Rank 8)
     { 31, 80, 301279, 301278, 0, CoASource::RANK }, // Seismic Smash (Rank 5)

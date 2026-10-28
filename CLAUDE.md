@@ -45,11 +45,16 @@ Full description: [README.md](README.md) (moved from `.github/` to the root on 2
 
 ## Next steps
 
-1. CoA catch-up round 5 (2026-10-15, CoA `4670ac251d86`; branch `claude/coa-round5-f111171c`, not on `main` yet): all
-   nine pinned rules hold on the merged class module `6caae328`; the regenerated table has the same 3,656 rows (the
-   round's two new taught abilities, Saber Slash (Fire) 680230 and Branded 707717, are not trainer rows); new in the
-   code: no Explode rank is taught while a Pyromancer holds Echo of Nozdormu (`LearnSpellsCoARules.h`, CoA
-   `c0eec7b9`). Merge after the round's T1 (build, boot, startup line `3656 ... 7 problem(s)`, errors baseline).
+1. CoA catch-up round 6 (2026-10-28, CoA `29f4e9fe1176`; branch `claude/coa-round6-a1576d86`, not on `main` yet): eight
+   of the nine pinned rules hold on the merged class module `62b3537`, `LoadCoATalentData` moved only by two added field
+   reads (CoA `7b635cda`; new fingerprint, same catalog). The table grows 3,656 -> 3,659 rows: Sun Cleric Parry 3124 at 1
+   (CoA `a827c79f`) and Primalist Seismic Crash ranks 9 and 10 (503265 at 66, 503266 at 73; they exist only with the round's
+   staged server `Spell.dbc` rows, without them the startup line counts 9 problems instead of 7). Not rows: Seismic Smash rank 1
+   300693 (CoA `1146fb20`, ClassSpells level 59) is a talent-tree spell and Character Advancement entry 7498, which the
+   talent system owns (the generator now names such a row); Reaper Thrown 2567 (`82ee3d10`) and the Guardian Wands
+   removal (`790552b9`) are the class module's live baseline, not this module's. The round-5 Explode / Echo of Nozdormu
+   rule (`LearnSpellsCoARules.h`) is unchanged and its rows are too. Merge after the round's T1 (build, boot, startup
+   line `3659 ... 7 problem(s)`, errors baseline); round 5's branch is already on `main`.
 2. Felsworn capital rifts are not faction-gated (queue): needs CoA's race-masked `SkillLineAbility` rows 23482-23487
    on server and client, or a race mask in this table; round 4 gates only Theramore and Stonard.
 3. Shieldgore character cleanup (queue proposal, the operator decides).
