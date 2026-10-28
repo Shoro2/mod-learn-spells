@@ -19,7 +19,7 @@
 // spell a class script makes a replacement target (mod-ascension-compat's check_replacement_learns); also a
 // spell that creates an Ascension vanity item (VanityCollection.dbc, 10764 items) or a deprecated one. The Book of
 // Artisans (trainer 200001) is never read: a spell only it teaches is a profession recipe.
-// 3659 rows, 56 left out.
+// 3660 rows, 56 left out.
 //
 // RequiredSpellId: the rank beneath, which the character must hold (0 = none). RaceMask: the races
 // mod-ascension-compat's CanGrantAscensionRacialSpell allows (0 = every race). Rows of a class are in
@@ -34,7 +34,7 @@
 
 namespace LearnSpells::CoAData
 {
-inline constexpr std::array<CoAClassSpell, 3659> ClassSpells =
+inline constexpr std::array<CoAClassSpell, 3660> ClassSpells =
 {{
     // class 12: CLASS 29, RANK 151, TRAINER 1
     { 12, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
@@ -3360,7 +3360,7 @@ inline constexpr std::array<CoAClassSpell, 3659> ClassSpells =
     { 30, 75, 502998, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 11)
     { 30, 78, 502999, 502994, 0, CoASource::BOOK_RANK }, // Deathwind (Rank 12)
     { 30, 80, 802428, 802427, 0, CoASource::RANK }, // Spectre Stride (Rank 8)
-    // class 31: CLASS 41, RANK 150, BOOK_RANK 2
+    // class 31: CLASS 42, RANK 150, BOOK_RANK 2
     { 31, 1, 81, 0, 0, CoASource::CLASS }, // Dodge (Passive)
     { 31, 1, 107, 0, 0, CoASource::CLASS }, // Block (Passive)
     { 31, 1, 674, 0, 0, CoASource::CLASS }, // Dual Wield (Passive)
@@ -3520,6 +3520,7 @@ inline constexpr std::array<CoAClassSpell, 3659> ClassSpells =
     { 31, 58, 502808, 502807, 0, CoASource::RANK }, // Hand of the Earthmother (Rank 8)
     { 31, 58, 803829, 803828, 0, CoASource::RANK }, // Magma Fissure (Rank 5)
     { 31, 58, 572878, 572877, 0, CoASource::RANK }, // Seismic Wave (Rank 7)
+    { 31, 59, 300693, 0, 0, CoASource::CLASS }, // Seismic Smash (Rank 1)
     { 31, 60, 570756, 0, 0, CoASource::CLASS }, // Greater Earthen Endurance
     { 31, 60, 572817, 0, 0, CoASource::CLASS }, // Greater Grove Instinct
     { 31, 60, 582261, 0, 0, CoASource::CLASS }, // Greater Essence of Nature

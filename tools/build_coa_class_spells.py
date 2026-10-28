@@ -20,7 +20,8 @@ window's (RequiresAura, CoA b03b7cfe) - or a TaughtAbilities spell (mod-ascensio
 spell a class script makes a replacement target (resolved by mod-ascension-compat's own gate,
 tools/check_replacement_learns.py --targets). A spell that creates an Ascension vanity item (VanityCollection.dbc) or
 whose name marks it deprecated is left out too. Nothing of the Book of Artisans (trainer 200001) is read: a spell only
-it teaches is a profession recipe. A CoA row whose spell the server's Spell.dbc does not carry is no row (the
+it teaches is a profession recipe. A ClassSpells row the operator decided to grant although its spell is a tree spell
+(OPERATOR_CLASS_GRANTS) is a CLASS row all the same. A CoA row whose spell the server's Spell.dbc does not carry is no row (the
 evidence JSON lists them as not_in_store): it becomes one when a spell package brings the spell.
 
 RaceMask replays mod-ascension-compat's CanGrantAscensionRacialSpell for every playable race (0 = every race); a
@@ -58,6 +59,13 @@ PLAYABLE_RACES = (1, 2, 3, 4, 5, 6, 7, 8, 10, 11)
 # is replayed for PLAYABLE_RACES only - the module's data names no racial line of a new race - and the result is then
 # widened by the donor rule (widen_race_mask).
 FL_RACE_DONORS = {9: 2, 12: 1}                  # Goblin <- Orc, Worgen <- Human
+# ClassSpells rows the operator wants granted as CoA's trainer sells them although the spell is also a talent-tree
+# spell and a Character Advancement entry (the standing rule leaves those to the talent system): (class, spell) ->
+# the decision. Such a row is a CLASS row at its ClassSpells level; buying the talent stays possible, as in CoA.
+OPERATOR_CLASS_GRANTS = {
+    (31, 300693): "the operator 2026-10-28: \"Primalist Seismic Smash Rang 1 so wie im coa orginal\" - CoA 1146fb20 "
+                  "(#7555) sells rank 1 at level 59 so ranks 2-4 (301276-301279) become reachable",
+}
 SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN = 2   # DBCEnums.h
 SOURCES = ("CLASS", "RANK", "RANK_ROOT", "OFFER", "TRAINER", "BOOK_RANK")
 ITEM_EFFECTS = (24, 157, 34, 66)
@@ -477,21 +485,22 @@ def main():
     not_in_store = collections.OrderedDict()   # CoA rows this server's Spell.dbc cannot carry: (class, spell) -> row
     # CoA progression rows (ClassSpells) whose spell is a talent-tree spell. The tree owns the spell in Forgotten Land
     # (a Character Advancement entry the player buys), so it is no row, exactly like the tree-spell roots that 1,298
-    # rank rows hang on; named here so that the first such ClassSpells row (Seismic Smash rank 1, CoA 1146fb20)
-    # is a recorded decision and not a silent drop.
+    # rank rows hang on; named here so that such a row is a recorded decision and not a silent drop. The first one,
+    # Seismic Smash rank 1 (CoA 1146fb20), the operator wants granted as in CoA: OPERATOR_CLASS_GRANTS.
     class_rows_left_to_tree = collections.OrderedDict()
     for cls in COA_CLASSES:
         tree_spells = {r["SpellId"] for r in tree if r["ClassId"] == cls}
         rows = collections.OrderedDict()
 
         def add(sid, level, req, source):
-            if sid and sid in tree_spells and source == "CLASS":
+            granted = source == "CLASS" and (cls, sid) in OPERATOR_CLASS_GRANTS
+            if sid and sid in tree_spells and source == "CLASS" and not granted:
                 class_rows_left_to_tree.setdefault((cls, sid), dict(
                     ClassId=cls, Level=level, SpellId=sid, Source=source, Name=spells.get(sid, {}).get("name", ""),
                     CharacterAdvancementEntry=sid in catalog[cls]))
             if sid and sid not in spells and sid not in tree_spells:
                 not_in_store.setdefault((cls, sid), dict(ClassId=cls, Level=level, SpellId=sid, Source=source))
-            if not sid or sid not in spells or sid in tree_spells or sid in rows:
+            if not sid or sid not in spells or (sid in tree_spells and not granted) or sid in rows:
                 return
             rows[sid] = dict(ClassId=cls, Level=level, SpellId=sid, RequiredSpellId=req, Source=source)
 
@@ -544,6 +553,8 @@ def main():
                     why = talent_owned[cls][r["SpellId"]] + " (the talent system grants it)"
                 elif r["SpellId"] in replacement_targets:
                     why = "replacement target of a class script (taught hidden while its talent or window is up)"
+            elif (cls, r["SpellId"]) in OPERATOR_CLASS_GRANTS and r["Source"] == "CLASS":
+                pass   # decided: granted at its level although the talent system also sells it
             elif r["SpellId"] in catalog[cls] or r["SpellId"] in talent_owned[cls] or r["SpellId"] in replacement_targets:
                 raise SystemExit("progression row %d of class %d is also owned by the talent system - decide first"
                                  % (r["SpellId"], cls))
