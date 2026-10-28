@@ -74,6 +74,10 @@ FELSWORN_SOURCE = "src/AscensionFelsworn.cpp"
 # catalog_spells copies, is unchanged.
 # Re-checked against mod-ascension-compat 6caae328eaa3 (CoA 4670ac251d86 merged, round 5): all nine fingerprints hold
 # (the merge cut CoA cd0f9b9b's spec-loot lines, the only change that would have moved LoadCoATalentData).
+# Re-checked against mod-ascension-compat 62b35377e2a3 (CoA 29f4e9fe1176 merged, round 6): eight fingerprints hold.
+# LoadCoATalentData moved: CoA 7b635cda reads two more fields per entry (TabAEInvestment, TabTEInvestment, fields 38 and
+# 39) for the tab-investment gate; nothing else in it changed, so the catalog of spells that catalog_spells copies is
+# the same, and only the fingerprint below is new.
 REPLAYED_RULES = (
     (RACIAL_HEADER, "GetRace",
      "6bb00b110a7d71c3599d0476c566ae069f81ceabcf0bb3d5872f859fc91afd38", "Racial.race_of"),
@@ -91,7 +95,7 @@ REPLAYED_RULES = (
      "53dbf11650222debea18c058aea3d62bc992c827ccfdfa05ccca4abe29dcf73e",
      "Racial.can_grant (the rift faction rule) and read_racial_rules (its rifts)"),
     ("src/AscensionCoATalentData.cpp", "LoadCoATalentData",
-     "f77588ff9cad87a5aef92ef1aa780950e7a58db1663ae375c58af3319f431804", "catalog_spells"),
+     "dc6d6fb67a55df60f8867a42f8cb87601dbb6a88512df1320c4847176b921193", "catalog_spells"),
     ("src/AscensionClassMechanics.cpp", "HasDeprecatedWord",
      "1722fbc876ffd5f01f6a3a1b106318a935d3542c81d13d0fdbf4834e19cf8b36", "deprecated"),
 )
@@ -471,11 +475,20 @@ def main():
 
     rows_out, excluded, per_class = [], [], {}
     not_in_store = collections.OrderedDict()   # CoA rows this server's Spell.dbc cannot carry: (class, spell) -> row
+    # CoA progression rows (ClassSpells) whose spell is a talent-tree spell. The tree owns the spell in Forgotten Land
+    # (a Character Advancement entry the player buys), so it is no row, exactly like the tree-spell roots that 1,298
+    # rank rows hang on; named here so that the first such ClassSpells row (Seismic Smash rank 1, CoA 1146fb20)
+    # is a recorded decision and not a silent drop.
+    class_rows_left_to_tree = collections.OrderedDict()
     for cls in COA_CLASSES:
         tree_spells = {r["SpellId"] for r in tree if r["ClassId"] == cls}
         rows = collections.OrderedDict()
 
         def add(sid, level, req, source):
+            if sid and sid in tree_spells and source == "CLASS":
+                class_rows_left_to_tree.setdefault((cls, sid), dict(
+                    ClassId=cls, Level=level, SpellId=sid, Source=source, Name=spells.get(sid, {}).get("name", ""),
+                    CharacterAdvancementEntry=sid in catalog[cls]))
             if sid and sid not in spells and sid not in tree_spells:
                 not_in_store.setdefault((cls, sid), dict(ClassId=cls, Level=level, SpellId=sid, Source=source))
             if not sid or sid not in spells or sid in tree_spells or sid in rows:
@@ -599,15 +612,20 @@ def main():
                    race_masked=sum(1 for r in rows_out if r["RaceMask"]),
                    with_requirement=sum(1 for r in rows_out if r["RequiredSpellId"]),
                    unresolved=collections.Counter(v.split(",")[0].split(":")[0] for v in unresolved_map.values()),
-                   not_in_store=len(not_in_store))
+                   not_in_store=len(not_in_store), class_rows_left_to_tree=len(class_rows_left_to_tree))
     print(json.dumps(summary, indent=1))
+    for r in class_rows_left_to_tree.values():
+        print("note: ClassSpells row { %d, %d, %d } (%s) is a talent-tree spell%s - left to the talent system, no row"
+              % (r["ClassId"], r["Level"], r["SpellId"], r["Name"],
+                 " and a Character Advancement entry" if r["CharacterAdvancementEntry"] else ""))
     if args.evidence:
         racials = {"%d,%d" % (race, cls): racial.racials(race, cls) for race in PLAYABLE_RACES for cls in COA_CLASSES}
         # not_in_store: what a spell package round would still turn into rows (see the docstring)
         json.dump(dict(summary=summary, rows=rows_out, excluded=excluded, unresolved=unresolved_map,
                        per_class={c: dict(v) for c, v in per_class.items()}, replayed_rules=rule_fingerprints,
                        racial_rule=dict(skills=skills, variants=sorted(variant_pairs), rifts=rifts),
-                       horde_rifts=horde_rifts, racials=racials, not_in_store=list(not_in_store.values())),
+                       horde_rifts=horde_rifts, racials=racials, not_in_store=list(not_in_store.values()),
+                       class_rows_left_to_tree=list(class_rows_left_to_tree.values())),
                   open(args.evidence, "w"), indent=1)
 
 
